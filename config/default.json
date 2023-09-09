@@ -1,0 +1,14 @@
+{
+  "db": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "postgres",
+    "engine": "psycopg2",
+    "database": "book_seeker",
+    "scheme": "book_seeker"
+  },
+  "web": {
+    "baseUrl": "https://site.com",
+    "optionsUrl": "/options"
+  }
+}
