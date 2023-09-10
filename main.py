@@ -8,6 +8,7 @@ from apps.scavenger.models.logic.FilterOptions import FilterOptions
 from apps.scavenger.models.logic.MapViewBox import MapViewBox
 from apps.scavenger.services.BookDataFetcher import BookDataFetcher
 from configlib.ConfigService import ConfigService
+from configlib.formatters.DbConfigFormatter import DbConfigFormatter
 from configlib.formatters.JsonConfigFormatter import JsonConfigFormatter
 from apps.db_migrations.Migrations import Migrations
 from datasource.DbDataSource import DbDataSource
@@ -25,11 +26,18 @@ def print_hi(name):
 if __name__ == '__main__':
     print_hi('PyCharm')
 
-    config = ConfigService(
+    config_service = ConfigService(
         JsonConfigFormatter('default'),
         JsonConfigFormatter('dev'),
         JsonConfigFormatter('secret')
-    ).config()
+    )
+    config = config_service.config()
+
+    db_config = config['db']
+    data_source = DbDataSource(PostgresDataProvider(db_config))
+    config_service.extend(DbConfigFormatter(data_source).get_config())
+
+    print(config_service.config())
 
     ScavengerApp(config).start()
 

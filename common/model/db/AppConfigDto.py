@@ -1,4 +1,3 @@
-from DateTime import DateTime
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 
@@ -12,5 +11,5 @@ class AppConfigDto(BaseDto):
     key: str = Column(String)
     value: str = Column(String)
     is_active: bool = Column(Boolean)
-    created_at: DateTime = Column(TIMESTAMP(timezone=True))
-    updated_at: DateTime = Column(TIMESTAMP(timezone=True))
+    created_at: str = Column(TIMESTAMP(timezone=True))
+    updated_at: str = Column(TIMESTAMP(timezone=True))
