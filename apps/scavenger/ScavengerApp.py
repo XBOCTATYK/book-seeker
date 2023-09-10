@@ -30,6 +30,7 @@ class ScavengerApp:
         self._data_fetcher = LocalFileDataFetcher()
 
     def start(self):
+        print('Scavenger has started!')
         db_config = self._config['db']
         self._data_source = DbDataSource(PostgresDataProvider(db_config))
         self._repository = RawDataRepository(self._data_source)

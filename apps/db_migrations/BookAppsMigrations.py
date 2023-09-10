@@ -6,7 +6,7 @@ from common.model.db.RawOptionsDataDto import RawOptionsDataDto
 from datasource.configs.DbConfig import DbConfig
 
 
-class Migrations:
+class BookAppsMigrations:
     models = []
     data_source: DbDataSource
     config = None
