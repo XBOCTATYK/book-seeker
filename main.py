@@ -1,6 +1,7 @@
 # This is a sample Python scripf
 from DateTime import DateTime
 
+from apps.scavenger.ScavengerApp import ScavengerApp
 from apps.scavenger.models.logic.Coordinate import Coordinate
 from apps.scavenger.models.logic.FetchOptions import FetchOptions
 from apps.scavenger.models.logic.FilterOptions import FilterOptions
@@ -30,11 +31,8 @@ if __name__ == '__main__':
         JsonConfigFormatter('secret')
     ).config()
 
-    db_config = config['db']
-    data_source = DbDataSource(PostgresDataProvider(db_config))
+    ScavengerApp(config).start()
 
-
-    fetcher = BookDataFetcher(config['web'], config['book'], config['secret_headers'])
     # data = fetcher.fetch(
     #     FetchOptions(
     #         map_box=MapViewBox(

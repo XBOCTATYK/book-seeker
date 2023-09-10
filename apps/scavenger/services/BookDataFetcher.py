@@ -8,29 +8,29 @@ from apps.scavenger.models.dto import MarkersRequestDto
 from apps.scavenger.models.logic.FetchOptions import FetchOptions
 from apps.scavenger.models.serializers.coordinates_serializers import map_view_box_to_string
 from apps.scavenger.models.serializers.date_time_serializers import format_date_time
-from datasource.rest.UrlCreator import create_url
+from apps.scavenger.services.DataFetcher import DataFetcher
+from datasource.rest.UrlUtils import UrlUtils
 
 
-class BookDataFetcher:
+class BookDataFetcher(DataFetcher):
+    _url_utils: UrlUtils
     _config: BookDataParserConfig = None
     _book_config: dict = None
     _secret_headers: dict = {}
     _last_result = None
 
-    def __init__(self, config: BookDataParserConfig, book_config: dict, secret_headers: dict):
+    def __init__(self, url_utils: UrlUtils, config: BookDataParserConfig, book_config: dict, secret_headers: dict):
+        self._url_utils = url_utils
         self._config = config
         self._book_config = book_config
         self._secret_headers = secret_headers
 
     def fetch(self, fetch_options: FetchOptions):
-        headers = self._set_headers()
-
-        print(headers)
-
-        raise Exception('uuu')
+        url = unquote(self._create_url(fetch_options))
+        headers = self._get_headers()
 
         self._last_result = urllib3.request(
-            url=unquote(self._create_url(fetch_options)),
+            url=url,
             method='GET',
             headers=headers,
             decode_content=True
@@ -41,16 +41,15 @@ class BookDataFetcher:
         return self._last_result.json()
 
     def _create_url(self, fetch_options: FetchOptions):
-        query_params = self._set_query_params(fetch_options)
-        print(query_params)
+        query_params = self._get_query_params(fetch_options)
 
-        return create_url(
+        return self._url_utils.create_url(
             host=self._config['baseUrl'],
             path=self._config['optionsUrl'],
             query=query_params
         )
 
-    def _set_query_params(self, fetch_options: FetchOptions) -> MarkersRequestDto:
+    def _get_query_params(self, fetch_options: FetchOptions) -> MarkersRequestDto:
         return {
             'dest_type': 'city',
             'ref': 'searchresults',
@@ -68,7 +67,7 @@ class BookDataFetcher:
             'ltfd_excl': f';BBOX={map_view_box_to_string(fetch_options.map_box)}',
         }
 
-    def _set_headers(self) -> dict:
+    def _get_headers(self) -> dict:
         return always_merger.merge({
             'content-typ': 'application/json; utf-8',
             'authority': self._book_config['authority'],

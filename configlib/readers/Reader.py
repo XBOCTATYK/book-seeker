@@ -1,5 +1,5 @@
 # abstract
-class ConfigReader:
+class Reader:
     read_str: str = ''
 
     def read(self, name: str) -> str:

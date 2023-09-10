@@ -1,9 +1,9 @@
 import os.path
 import os
-from configlib.readers.ConfigReader import ConfigReader
+from configlib.readers.Reader import Reader
 
 
-class FileConfigReader(ConfigReader):
+class FileTextReader(Reader):
     config_base_path = None
     config_str = None
 

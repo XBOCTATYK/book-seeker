@@ -10,4 +10,4 @@ class RawOptionsDataDto(BaseDto):
     id: int = Column(Integer, primary_key=True)
     raw_data: str = Column(JSON)
     writer: str = Column(String)
-    datetime: DateTime = Column(TIMESTAMP(timezone=True))
+    datetime: str = Column(TIMESTAMP(timezone=True))

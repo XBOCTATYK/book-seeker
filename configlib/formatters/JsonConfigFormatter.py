@@ -1,11 +1,11 @@
 import json
-from configlib.readers.FileConfigReader import FileConfigReader
+from configlib.readers.FileTextReader import FileTextReader
 from configlib.formatters.ConfigFormatter import ConfigFormatter
-from configlib.readers.ConfigReader import ConfigReader
+from configlib.readers.Reader import Reader
 
 
 class JsonConfigFormatter(ConfigFormatter):
-    reader: ConfigReader = FileConfigReader('/config')
+    reader: Reader = FileTextReader('/config')
     decoder = json.JSONDecoder()
     parsed_config: dict = None
 
