@@ -8,10 +8,10 @@ from datasource.configs.DbConfig import DbConfig
 
 class Migrations:
     models = []
-    data_source: DataSource
+    data_source: DbDataSource
     config = None
 
-    def __init__(self, data_source: DataSource, config: DbConfig):
+    def __init__(self, data_source: DbDataSource, config: DbConfig):
         self.data_source = data_source
         self.config = config
 

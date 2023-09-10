@@ -1,4 +1,11 @@
 # This is a sample Python scripf
+from DateTime import DateTime
+
+from apps.scavenger.models.logic.Coordinate import Coordinate
+from apps.scavenger.models.logic.FetchOptions import FetchOptions
+from apps.scavenger.models.logic.FilterOptions import FilterOptions
+from apps.scavenger.models.logic.MapViewBox import MapViewBox
+from apps.scavenger.services.BookDataFetcher import BookDataFetcher
 from configlib.ConfigService import ConfigService
 from configlib.formatters.JsonConfigFormatter import JsonConfigFormatter
 from apps.db_migrations.Migrations import Migrations
@@ -25,6 +32,28 @@ if __name__ == '__main__':
 
     db_config = config['db']
     data_source = DbDataSource(PostgresDataProvider(db_config))
+
+
+    fetcher = BookDataFetcher(config['web'], config['book'], config['secret_headers'])
+    # data = fetcher.fetch(
+    #     FetchOptions(
+    #         map_box=MapViewBox(
+    #             Coordinate(13.68641832626463, 100.42547080801124),
+    #             Coordinate(13.759126242275268, 100.76261375234718)
+    #         ),
+    #         currency='RUB',
+    #         checkin=DateTime('2023/10/03 UTC'),
+    #         checkout=DateTime('2023/11/03 UTC'),
+    #         filter=FilterOptions(
+    #             rooms=1,
+    #             review_score=8,
+    #             oos='1',
+    #             min_price=1000,
+    #             max_price=4000,
+    #             currency='RUB'
+    #         )
+    #     )
+    # )
     # Migrations(data_source, db_config).start()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

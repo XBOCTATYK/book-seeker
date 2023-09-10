@@ -9,17 +9,16 @@ Components = namedtuple(
 
 def create_url(host,
                path,
-               query,
+               query: dict,
                scheme='https',
-               url='',
                anchor=None):
     return urlunparse(
         Components(
             scheme=scheme,
             netloc=host,
-            query=urlencode(query),
-            path=path,
-            url=url,
+            query=urlencode(query, True, '', 'utf-8'),
+            path='',
+            url=path,
             fragment=anchor
         )
     )
