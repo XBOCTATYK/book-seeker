@@ -14,8 +14,8 @@ class DbDataSource:
         self._session = data_provider.connect()
         self.name = name
 
-    def get_session(self) -> Session:
-        return self._session
+    def open_session(self) -> Session:
+        return self._data_provider.create_session()
 
     def get_connection(self) -> Connection:
         return self._data_provider.get_connection()

@@ -1,14 +1,15 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
 class FilterOptions:
-    rooms: int
-    review_score: int
-    oos: str
-    min_price: int
-    max_price: int
-    currency: str
+    rooms: Optional[int]
+    review_score: Optional[int]
+    oos: Optional[str]
+    min_price: Optional[int]
+    max_price: Optional[int]
+    currency: Optional[str]
 
     def __str__(self):
         return f'oos={self.oos};review_score={self.review_score*10};' \

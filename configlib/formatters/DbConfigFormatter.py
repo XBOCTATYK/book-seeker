@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from common.model.db.AppConfigDto import AppConfigDto
@@ -13,12 +14,14 @@ class DbConfigFormatter(ConfigFormatter):
 
     def get_config(self) -> dict:
         raw_config = []
-        session: Session = self._data_source.get_session()
-        params_collection = session.execute(AppConfigDto.__table__.select()).all()
+        session: Session = self._data_source.open_session()
+        statement = select(AppConfigDto).where(AppConfigDto.is_active == True)
+        params_collection = session.execute(statement).all()
 
         for param in params_collection:
-            param_id, key, value, is_active, dt, ut = param
-            raw_config.append([key, value])
+            dto = param[0]
+            print(dto)
+            raw_config.append([dto.key, dto.value])
 
         config = {}
         for config_part in raw_config:
@@ -32,5 +35,7 @@ class DbConfigFormatter(ConfigFormatter):
                 else:
                     current.setdefault(part, {})
                     current = current[part]
+
+        session.close()
 
         return config

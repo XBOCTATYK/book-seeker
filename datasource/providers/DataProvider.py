@@ -1,3 +1,6 @@
+from sqlalchemy.orm import Session
+
+
 class DataProvider:
     name = 'abstract'
 
@@ -11,4 +14,7 @@ class DataProvider:
         return None
 
     def get_connection(self):
+        return None
+
+    def create_session(self) -> Session:
         return None

@@ -43,7 +43,7 @@ class PostgresDataProvider(DataProvider):
         return self
 
     def create_session(self) -> Session:
-        return Session(self.engine)
+        return self.connect()
 
     def _create_or_get_connection(self):
         if self.connection is None:

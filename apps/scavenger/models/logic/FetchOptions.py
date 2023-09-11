@@ -9,7 +9,7 @@ from apps.scavenger.models.logic.MapViewBox import MapViewBox
 @dataclass
 class FetchOptions:
     map_box: MapViewBox
-    checkout: DateTime
     checkin: DateTime
+    checkout: DateTime
     filter: FilterOptions
     currency: str

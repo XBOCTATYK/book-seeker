@@ -11,7 +11,7 @@ class RawDataRepository:
         self.data_source = data_source
 
     def save(self, raw_options_data_dto: RawOptionsDataDto):
-        session: Session = self.data_source.get_session()
+        session: Session = self.data_source.open_session()
 
         session.begin()
         session.add(raw_options_data_dto)

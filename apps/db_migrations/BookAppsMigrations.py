@@ -1,5 +1,8 @@
 from sqlalchemy import Connection
 
+from apps.scavenger.models.db.FetchOptionsTable import FetchOptionsTable
+from apps.scavenger.models.db.FilterOptionsTable import FilterOptionsTable
+from apps.scavenger.models.db.FilterTypesTable import FilterTypesTable
 from common.model.db.AppConfigDto import AppConfigDto
 from datasource import DbDataSource
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
@@ -21,4 +24,7 @@ class BookAppsMigrations:
         print(RawOptionsDataDto.metadata)
         RawOptionsDataDto.metadata.create_all(connection, checkfirst=True)
         AppConfigDto.metadata.create_all(connection, checkfirst=True)
+        FetchOptionsTable.metadata.create_all(connection, checkfirst=True)
+        FilterOptionsTable.metadata.create_all(connection, checkfirst=True)
+        FilterTypesTable.metadata.create_all(connection, checkfirst=True)
         connection.commit()

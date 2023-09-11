@@ -1,6 +1,7 @@
 # This is a sample Python scripf
 
 from apps.scavenger.ScavengerApp import ScavengerApp
+from apps.scavenger.services.FilterFetcher import FilterFetcher
 from configlib.ConfigService import ConfigService
 from configlib.formatters.DbConfigFormatter import DbConfigFormatter
 from configlib.formatters.JsonConfigFormatter import JsonConfigFormatter
@@ -25,7 +26,11 @@ if __name__ == '__main__':
 
     print(config_service.config())
 
-    ScavengerApp(config).start()
+    # ScavengerApp(config).start()
 
-    # BookAppsMigrations(data_source, db_config).start()
+    options = FilterFetcher(data_source).fetch()
+
+    print(options)
+
+    #  BookAppsMigrations(data_source, db_config).start()
 
