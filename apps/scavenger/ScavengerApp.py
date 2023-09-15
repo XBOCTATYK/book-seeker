@@ -7,8 +7,10 @@ from apps.scavenger.models.logic.Coordinate import Coordinate
 from apps.scavenger.models.logic.FetchOptions import FetchOptions
 from apps.scavenger.models.logic.FilterOptions import FilterOptions
 from apps.scavenger.models.logic.MapViewBox import MapViewBox
+from apps.scavenger.models.mappers.filter_options_mapper import FilterOptionsSerializer
 from apps.scavenger.services.BookDataFetcher import BookDataFetcher
 from apps.scavenger.services.DataFetcher import DataFetcher
+from apps.scavenger.services.FilterFetcher import FilterFetcher
 from apps.scavenger.services.LocalFileDataFetcher import LocalFileDataFetcher
 from apps.scavenger.services.RawDataRepository import RawDataRepository
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
@@ -23,36 +25,25 @@ class ScavengerApp:
     _data_fetcher: DataFetcher = None
     _url_utils: UrlUtils = UrlUtils()
     _repository: RawDataRepository = None
+    _fiter_fetcher: FilterFetcher = None
 
     def __init__(self, config: dict):
         self._config = config
-        # self._data_fetcher = BookDataFetcher(self._url_utils, config['web'], config['book'], config['secret_headers'])
-        self._data_fetcher = LocalFileDataFetcher()
+
+        self._data_fetcher = BookDataFetcher(self._url_utils, FilterOptionsSerializer(), config['web'], config['book'], config['secret_headers'])
+        # self._data_fetcher = LocalFileDataFetcher()
 
     def start(self):
         print('Scavenger has started!')
         db_config = self._config['db']
         self._data_source = DbDataSource(PostgresDataProvider(db_config))
         self._repository = RawDataRepository(self._data_source)
-        data = self._data_fetcher.fetch(
-            FetchOptions(
-                map_box=MapViewBox(
-                    Coordinate(13.68641832626463, 100.42547080801124),
-                    Coordinate(13.759126242275268, 100.76261375234718)
-                ),
-                currency='RUB',
-                checkin=DateTime('2023/10/03 UTC'),
-                checkout=DateTime('2023/11/03 UTC'),
-                filter=FilterOptions(
-                    rooms=1,
-                    review_score=8,
-                    oos='1',
-                    min_price=1000,
-                    max_price=4000,
-                    currency='RUB'
-                )
-            )
-        )
+        self._fiter_fetcher = FilterFetcher(self._data_source)
+        options = self._fiter_fetcher.fetch()
+        print(options)
+        data = self._data_fetcher.fetch(options[0])
+
+        print(data)
 
         # writes possible hotels to repository
         for item in data['b_hotels']:
