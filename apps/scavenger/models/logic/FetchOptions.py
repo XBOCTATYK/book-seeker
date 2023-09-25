@@ -13,3 +13,4 @@ class FetchOptions:
     checkout: DateTime
     filter: FilterOptions
     currency: str
+    persons: int

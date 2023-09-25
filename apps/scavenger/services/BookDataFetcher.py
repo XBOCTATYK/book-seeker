@@ -1,3 +1,4 @@
+from functools import reduce
 from urllib.parse import unquote
 from deepmerge import always_merger
 
@@ -8,7 +9,8 @@ from apps.scavenger.models.dto import MarkersRequestDto
 from apps.scavenger.models.logic.FetchOptions import FetchOptions
 from apps.scavenger.models.mappers.filter_options_mapper import FilterOptionsSerializer
 from apps.scavenger.models.serializers.coordinates_serializers import map_view_box_to_string
-from apps.scavenger.models.serializers.date_time_serializers import format_date_time
+from apps.scavenger.models.serializers.date_time_serializers import serialize_date_time
+from apps.scavenger.models.serializers.persons_serializer import serialize_persons_count
 from apps.scavenger.services.DataFetcher import DataFetcher
 from datasource.rest.UrlUtils import UrlUtils
 
@@ -21,7 +23,8 @@ class BookDataFetcher(DataFetcher):
     _secret_headers: dict = {}
     _last_result = None
 
-    def __init__(self, url_utils: UrlUtils, filter_options_serializer: FilterOptionsSerializer, config: BookDataParserConfig, book_config: dict, secret_headers: dict):
+    def __init__(self, url_utils: UrlUtils, filter_options_serializer: FilterOptionsSerializer,
+                 config: BookDataParserConfig, book_config: dict, secret_headers: dict):
         self._url_utils = url_utils
         self._config = config
         self._book_config = book_config
@@ -59,11 +62,11 @@ class BookDataFetcher(DataFetcher):
         return {
             'dest_type': 'city',
             'ref': 'searchresults',
-            'limit': 100,
+            'limit': 2,
             'lang': 'en-gb',
-            'checkin': format_date_time(fetch_options.checkin),
-            'checkout': format_date_time(fetch_options.checkout),
-            'room1': 'A,A',
+            'checkin': serialize_date_time(fetch_options.checkin),
+            'checkout': serialize_date_time(fetch_options.checkout),
+            'room1': serialize_persons_count(fetch_options.persons),
             'maps_opened': 1,
             'sr_countrycode': 'th',  # TODO: заменить
             'spr': 1,

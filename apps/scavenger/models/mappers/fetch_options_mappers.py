@@ -43,7 +43,8 @@ class FetchOptionsMapper:
             checkin=DateTime(fetch_options_table.checkin),
             checkout=DateTime(fetch_options_table.checkout),
             currency=fetch_options_table.currency,
-            filter=filters
+            filter=filters,
+            persons=3
         )
 
     def _parse_map_box(self, map_box):
