@@ -3,13 +3,13 @@ from sqlalchemy.orm import Session
 
 from common.model.db.AppConfigDto import AppConfigDto
 from configlib.formatters.ConfigFormatter import ConfigFormatter
-from datasource.DbDataSource import DbDataSource
+from datasource.DbLikeDataSource import DbLikeDataSource
 
 
 class DbConfigFormatter(ConfigFormatter):
-    _data_source: DbDataSource = None
+    _data_source: DbLikeDataSource = None
 
-    def __init__(self, data_source: DbDataSource):
+    def __init__(self, data_source: DbLikeDataSource):
         self._data_source = data_source
 
     def get_config(self) -> dict:

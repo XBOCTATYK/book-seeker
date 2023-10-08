@@ -7,13 +7,13 @@ from apps.scavenger.models.db.FetchOptionsTable import FetchOptionsTable
 from apps.scavenger.models.logic.FetchOptions import FetchOptions
 from apps.scavenger.models.mappers.fetch_options_mappers import FetchOptionsMapper
 from apps.scavenger.services.FilterTypeDictionary import FilterTypeDictionary
-from datasource import DbDataSource
+from datasource import DbLikeDataSource
 
 
 class FilterFetcher:
-    data_source: DbDataSource = None
+    data_source: DbLikeDataSource = None
 
-    def __init__(self, data_source: DbDataSource):
+    def __init__(self, data_source: DbLikeDataSource):
         self.data_source = data_source
 
     def fetch(self):

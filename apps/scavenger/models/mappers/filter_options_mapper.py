@@ -1,5 +1,6 @@
 from functools import reduce
 
+from apps.scavenger.models.constants.filter_enums import EPaymentDetails, ERoomFacility, EHotelFacility
 from apps.scavenger.models.logic import FilterOptions
 
 
@@ -16,12 +17,12 @@ class FilterOptionsSerializer:
         create_default_numeric_mapper('review_score', lambda x: x * 10),
         create_default_numeric_mapper('oos'),
         create_default_numeric_mapper('rooms'),
-        create_bool_mapper('fc=2'),  # free cancellation
-        create_bool_mapper('fc=4'),  # without card
-        create_bool_mapper('fc=5'),  # no prepayment
-        create_bool_mapper('roomfacility=11'),  # 11 - air cond
-        create_bool_mapper('roomfacility=38'),  # 38 - bathroom
-        create_bool_mapper('hotelfacility=107'),  # wifi
+        create_bool_mapper(f"{EPaymentDetails.get_prefix()}={EPaymentDetails.FREE_CANCELLATION}"),
+        create_bool_mapper(f"{EPaymentDetails.get_prefix()}={EPaymentDetails.WITHOUT_CARD}"),
+        create_bool_mapper(f"{EPaymentDetails.get_prefix()}={EPaymentDetails.NO_PREPAYMENT}"),
+        create_bool_mapper(f"{ERoomFacility.get_prefix()}={ERoomFacility.AIR_COND}"),
+        create_bool_mapper(f"{ERoomFacility.get_prefix()}={ERoomFacility.BATHROOM}"),
+        create_bool_mapper(f"{EHotelFacility.get_prefix()}={EHotelFacility.FREE_WIFI}"),
         create_default_numeric_mapper('distance'),
         create_default_numeric_mapper('entire_place_bedroom_count'),
         lambda x: f"price={x['currency']}-{x['min_price']}-{x['max_price']}-1" if 'currency' in x else '',

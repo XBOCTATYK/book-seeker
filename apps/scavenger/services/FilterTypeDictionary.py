@@ -1,15 +1,15 @@
-from sqlalchemy import select, String
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from apps.scavenger.models.db.FilterTypesTable import FilterTypesTable
-from datasource.DbDataSource import DbDataSource
+from datasource.DbLikeDataSource import DbLikeDataSource
 
 
 class FilterTypeDictionary:
-    _data_source: DbDataSource
+    _data_source: DbLikeDataSource
     _filter_types: dict
 
-    def __init__(self, data_source: DbDataSource):
+    def __init__(self, data_source: DbLikeDataSource):
         self._data_source = data_source
         session: Session = self._data_source.open_session()
         db_result = session.execute(select(FilterTypesTable)).all()

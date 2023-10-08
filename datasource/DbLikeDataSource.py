@@ -4,12 +4,12 @@ from sqlalchemy.orm import Session
 from datasource.providers.DataProvider import DataProvider
 
 
-class DbDataSource:
+class DbLikeDataSource:
     name: str = None
     _session: Session = None
     _data_provider: DataProvider = None
 
-    def __init__(self, data_provider: DataProvider, name: str = 'default_data_source'):
+    def __init__(self, data_provider: DataProvider, name: str = 'db_like_data_source'):
         self._data_provider = data_provider
         self._session = data_provider.connect()
         self.name = name
