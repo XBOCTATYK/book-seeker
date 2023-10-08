@@ -23,6 +23,7 @@ class AnalyzerApp(AbstractApp):
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source, self._analyser_offset_repository_name)
         self._repository = RawDataRepository(self._data_source, self._analyser_offset_repository)
 
-        self._repository.get_next()
+        dto = self._repository.find_next()
+        print(dto)
 
 

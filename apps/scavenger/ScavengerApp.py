@@ -10,6 +10,7 @@ from apps.scavenger.services.DataFetcher import DataFetcher
 from apps.scavenger.services.FilterFetcher import FilterFetcher
 from apps.scavenger.services.RawDataRepository import RawDataRepository
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
+from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
 from datasource.providers.PostgresDataProvider import PostgresDataProvider
 from datasource.rest.UrlUtils import UrlUtils
@@ -22,6 +23,8 @@ class ScavengerApp(AbstractApp):
     _url_utils: UrlUtils = UrlUtils()
     _repository: RawDataRepository = None
     _fiter_fetcher: FilterFetcher = None
+    _analyser_offset_repository: OffsetPointerRepository = None
+    _analyser_offset_repository_name = 'scavenge_app'
 
     def __init__(self, config: dict):
         super().__init__(config)
@@ -34,7 +37,8 @@ class ScavengerApp(AbstractApp):
         print('Scavenger has started!')
         db_config = self._config['db']
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config))
-        self._repository = RawDataRepository(self._data_source)
+        self._analyser_offset_repository = OffsetPointerRepository(self._data_source, self._analyser_offset_repository_name)
+        self._repository = RawDataRepository(self._data_source, self._analyser_offset_repository)
         self._fiter_fetcher = FilterFetcher(self._data_source)
         options = self._fiter_fetcher.fetch()
         print(options)
