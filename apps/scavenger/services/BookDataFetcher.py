@@ -68,8 +68,9 @@ class BookDataFetcher(DataFetcher):
             'checkout': serialize_date_time(fetch_options.checkout),
             'room1': serialize_persons_count(fetch_options.persons),
             'maps_opened': 1,
-            'sr_countrycode': 'th',  # TODO: заменить
             'spr': 1,
+            'nor': 1,
+            'sech': 1,
             'currency': fetch_options.currency,
             'nflt': self._filter_options_serializer.serialize(fetch_options.filter),
             'order': 'popularity',
