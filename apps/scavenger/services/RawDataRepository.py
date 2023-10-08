@@ -3,49 +3,34 @@ from sqlalchemy.orm import Session
 
 from common.model.db.OffsetPointerDto import OffsetPointerDto
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
+from common.services.AbstractRepository import AbstractRepository
+from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
 
 
-class RawDataRepository:
+class RawDataRepository(AbstractRepository):
     data_source: DbLikeDataSource = None
     _session: Session = None
-    _repository_name = 'scavenge_app'
+    _offset_pointer_repository = None
 
-    def __init__(self, data_source: DbLikeDataSource):
+    def __init__(self, data_source: DbLikeDataSource, offset_pointer_repository: OffsetPointerRepository):
+        super().__init__(data_source)
         self.data_source = data_source
+        self._offset_pointer_repository = offset_pointer_repository
 
     def save(self, raw_options_data_dto: RawOptionsDataDto):
-        self._eval_in_transaction(lambda sess: sess.add(raw_options_data_dto))
+        return self._eval_in_transaction(lambda sess: sess.add(raw_options_data_dto))
 
-    def get_first(self):
-        self._eval_in_transaction(self._get_first)
+    def get_next(self):
+        return self._eval_in_transaction(self._get_next)
 
-    def _get_current_session(self) -> Session:
-        return self.data_source.open_session() if self._session is None else self._session
-
-    def _eval_in_transaction(self, fn):
-        session: Session = self._get_current_session()
-
-        session.begin()
-        result = fn(session)
-
-        session.commit()
-
-        self._session = session
-
-        return result
-
-    def _get_first(self, sess: Session) -> RawOptionsDataDto:
-        offset_search_statement = select(OffsetPointerDto).where(OffsetPointerDto.key == self._repository_name)
-        offset_db_result = sess.execute(offset_search_statement)
-        offset = offset_db_result.first()[0].value
+    def _get_next(self, sess: Session) -> RawOptionsDataDto:
+        offset = self._offset_pointer_repository.get_offset()
 
         search_statement = select(RawOptionsDataDto).where(RawOptionsDataDto.id == offset)
-        result = sess.execute(search_statement)
-        eventual, *rest = result.first()
+        raw_data_db_result = sess.execute(search_statement)
+        raw_data_dto, *rest = raw_data_db_result.first()
 
-        offset_statement = update(OffsetPointerDto)\
-            .where(OffsetPointerDto.key == self._repository_name)
-        sess.execute(offset_statement, {'value': offset + 1})
+        self._offset_pointer_repository.update_value(offset + 1)
 
-        return eventual
+        return raw_data_dto
