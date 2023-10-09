@@ -14,3 +14,6 @@ class CleanDataParamDto(BaseDto):
     param_set: Mapped[int] = mapped_column(ForeignKey('clean_data.id'))
     type: Mapped[int] = mapped_column(ForeignKey('clean_data_params_dictionary.id'))
     value: Mapped[str] = mapped_column(String(length=512))
+
+    def __str__(self):
+        return f"id={self.id}, param_set={self.param_set}, type={self.type}, value={self.value}"

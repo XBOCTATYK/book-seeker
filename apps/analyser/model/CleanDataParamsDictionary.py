@@ -12,3 +12,6 @@ class CleanDataParamsDictionaryDto(BaseDto):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, unique=True)
     name: Mapped[str] = mapped_column(String, unique=True, index=True)
+
+    def __str__(self):
+        return f"id={self.id}, name={self.name}"
