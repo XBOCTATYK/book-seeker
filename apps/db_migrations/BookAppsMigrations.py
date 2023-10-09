@@ -36,7 +36,6 @@ class BookAppsMigrations:
     def start(self):
         connection: Connection = self.data_source.get_connection()
 
-        print(RawOptionsDataDto.metadata)
         for dto in self._entities:
             dto.metadata.create_all(connection, checkfirst=True)
 

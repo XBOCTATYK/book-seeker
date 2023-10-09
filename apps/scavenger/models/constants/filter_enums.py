@@ -18,7 +18,7 @@ class EHotelFacility(Enum):
         return 'hotelfacility'
 
 
-class EPaymentDetails:
+class EPaymentDetails(Enum):
     FREE_CANCELLATION = 2,
     WITHOUT_CARD = 4,
     NO_PREPAYMENT = 5

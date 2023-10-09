@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, BigInteger, Boolean
+from sqlalchemy import Column, String, BigInteger
 from sqlalchemy.dialects.postgresql import TIMESTAMP, JSON
 
 from common.model.db.BaseDto import BaseDto

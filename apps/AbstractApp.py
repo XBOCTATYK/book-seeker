@@ -1,3 +1,4 @@
+# abstract app class
 class AbstractApp:
     _config: dict = None
 
