@@ -29,6 +29,7 @@ class AnalyzerApp(AbstractApp):
 
         dto = self._repository.find_next()
         decoded_dictionary = self._decoder.decode(dto.raw_data)
+        print(decoded_dictionary)
 
 
 

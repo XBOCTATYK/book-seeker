@@ -13,7 +13,7 @@ from common.model.db.BaseDto import BaseDto
 class CleanDataDto(BaseDto):
     __tablename__ = 'clean_data'
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True, unique=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True, unique=True, autoincrement=True)
     param_set: Mapped[List[CleanDataParamDto]] = relationship(lazy=False)
     status: Mapped[str] = mapped_column(String)
     created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True))

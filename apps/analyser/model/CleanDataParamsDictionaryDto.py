@@ -10,7 +10,7 @@ from common.model.db.BaseDto import BaseDto
 class CleanDataParamsDictionaryDto(BaseDto):
     __tablename__ = 'clean_data_params_dictionary'
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, unique=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, unique=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String, unique=True, index=True)
 
     def __str__(self):

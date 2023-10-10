@@ -1,8 +1,11 @@
 from sqlalchemy import Connection
+from sqlalchemy.dialects.postgresql import insert
 
 from apps.analyser.model.CleanDataDto import CleanDataDto
 from apps.analyser.model.CleanDataParamDto import CleanDataParamDto
-from apps.analyser.model.CleanDataParamsDictionary import CleanDataParamsDictionaryDto
+from apps.analyser.model.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
+
+from apps.db_migrations.dictionaries import migration_dictionaries
 from apps.scavenger.models.db.FetchOptionsTable import FetchOptionsTable
 from apps.scavenger.models.db.FilterOptionsTable import FilterOptionsTable
 from apps.scavenger.models.db.FilterTypesTable import FilterTypesTable
@@ -40,3 +43,20 @@ class BookAppsMigrations:
             dto.metadata.create_all(connection, checkfirst=True)
 
         connection.commit()
+
+        self._insert_dictionaries(connection)
+
+    def _insert_dictionaries(self, connection: Connection):
+        for key in migration_dictionaries.keys():
+            dict_item = migration_dictionaries[key]
+            try:
+                connection.begin()
+
+                values = list(map(lambda x: {'name': x}, dict_item))
+                entity = list(filter(lambda x: x.__tablename__ == key, self._entities))[0]
+                clean_data_dict_statement = insert(entity).values(values)
+                connection.execute(clean_data_dict_statement)
+
+                connection.commit()
+            except:
+                connection.rollback()
