@@ -23,12 +23,18 @@ class AbstractRepository:
         session: Session = self._get_current_session()
         is_transaction_started_earlier = session.get_transaction().is_active if session.get_transaction() else False
 
-        if not is_transaction_started_earlier:
-            session.begin()
+        try:
+            if not is_transaction_started_earlier:
+                session.begin()
 
-        result = fn(session)
+            result = fn(session)
 
-        if not is_transaction_started_earlier:
-            session.commit()
+            if not is_transaction_started_earlier:
+                session.commit()
 
-        return result
+            return result
+
+        except:
+            session.rollback()
+
+
