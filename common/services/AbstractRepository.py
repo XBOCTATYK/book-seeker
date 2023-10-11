@@ -34,7 +34,8 @@ class AbstractRepository:
 
             return result
 
-        except:
+        except Exception as error:
             session.rollback()
+            raise error
 
 

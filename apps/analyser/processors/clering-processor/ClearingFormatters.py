@@ -1,3 +1,0 @@
-clearing_formatters = [
-
-]
