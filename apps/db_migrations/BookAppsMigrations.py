@@ -58,5 +58,6 @@ class BookAppsMigrations:
                 connection.execute(clean_data_dict_statement)
 
                 connection.commit()
-            except:
+            except Exception as err:
                 connection.rollback()
+                raise err
