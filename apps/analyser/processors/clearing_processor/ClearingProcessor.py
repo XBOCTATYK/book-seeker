@@ -15,9 +15,6 @@ class ClearingProcessor(AbstractProcessor):
     def process(self, dto: RawDataDecodedDto):
         selected_values = self._selector.select_values(dto.data)
         result = self._repository.insert_clear_data(selected_values)
-        print(result)
-
-        self._repository.get_all()
 
 
 

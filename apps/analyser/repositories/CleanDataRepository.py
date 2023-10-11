@@ -32,5 +32,3 @@ class CleanDataRepository(AbstractRepository):
         statement = select(CleanDataDto)
         res = session.execute(statement).unique().fetchall()
 
-        print(res)
-
