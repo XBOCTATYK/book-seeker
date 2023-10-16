@@ -21,11 +21,10 @@ class AbstractRepository:
 
     def _eval_in_transaction(self, fn):
         session: Session = self._get_current_session()
-        session.close_all()
-        is_transaction_started_earlier = session.get_transaction().is_active if session.get_transaction() else False
+        is_transaction_started_earlier = session.in_transaction()
 
         try:
-            if not is_transaction_started_earlier:
+            if not session.in_transaction():
                 session.begin()
 
             result = fn(session)
@@ -38,8 +37,9 @@ class AbstractRepository:
         except Exception as error:
             session.rollback()
             raise error
+        finally:
+            if not session.in_transaction():
+                session.close_all()
 
-    def __del__(self):
-        self._session.close()
 
 
