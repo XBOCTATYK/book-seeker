@@ -23,6 +23,8 @@ class DbDictionary:
             key: FilterTypesTable = dict_item[0]
             self._dict_items.setdefault(key.name, key.id)
 
+        session.close()
+
     def select_by_id(self, type_name: str) -> int:
         return self._dict_items[type_name]
 
