@@ -8,6 +8,8 @@ from common.model.db.BaseDto import BaseDto
 
 
 class ParamWeightDto(BaseDto):
+    __tablename__ = 'param_weights'
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, unique=True, autoincrement=True)
     param_name: Mapped[int] = mapped_column(ForeignKey(CleanDataParamsDictionaryDto.id), index=True)
     weight_value: Mapped[int] = mapped_column(Float, default=1)

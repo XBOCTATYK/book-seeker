@@ -4,6 +4,8 @@ from sqlalchemy.dialects.postgresql import insert
 from apps.analyser.model.CleanDataDto import CleanDataDto
 from apps.analyser.model.CleanDataParamDto import CleanDataParamDto
 from apps.analyser.model.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
+from apps.analyser.model.FilteredResultDto import FilteredResultDto
+from apps.analyser.model.ParamWeightDto import ParamWeightDto
 
 from apps.db_migrations.dictionaries import migration_dictionaries
 from apps.scavenger.models.db.FetchOptionsTable import FetchOptionsTable
@@ -30,6 +32,8 @@ class BookAppsMigrations:
         CleanDataDto,
         CleanDataParamsDictionaryDto,
         CleanDataParamDto,
+        ParamWeightDto,
+        FilteredResultDto
     ]
 
     def __init__(self, data_source: DbLikeDataSource, config: DbConfig):
