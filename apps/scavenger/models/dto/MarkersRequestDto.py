@@ -1,7 +1,11 @@
 from typing import TypedDict
 
+from common.lib.to_str import to_str
 
+
+@to_str
 class MarkerRequestParamsDto:
+    @to_str
     class QueryParams(TypedDict):
         dest_type: str
         ref: str
@@ -20,6 +24,7 @@ class MarkerRequestParamsDto:
         order: str  # popularity
         ltfd_excl: str  # map box
 
+    @to_str
     class Headers(TypedDict):
         authority: str
         accept: str

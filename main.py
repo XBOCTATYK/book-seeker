@@ -37,4 +37,4 @@ if __name__ == '__main__':
     # print(options)
     # print(FilterOptionsSerializer().serialize(options[0].filter))
 
-    BookAppsMigrations(data_source, db_config).start()
+    # BookAppsMigrations(data_source, db_config).start()

@@ -19,7 +19,7 @@ class FilterFetcher:
     def fetch(self):
         session: Session = self.data_source.open_session()
 
-        statement = select(FetchOptionsTable).where(FetchOptionsTable.is_active == True)
+        statement = select(FetchOptionsTable).where(FetchOptionsTable.is_active)
         res: Sequence[Row[FetchOptionsTable]] = session.execute(statement).unique()
 
         fetch_options = self._process(res)

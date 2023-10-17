@@ -5,10 +5,12 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from apps.analyser.model.CleanDataDto import CleanDataDto
 from apps.analyser.model.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
+from common.lib.to_str import to_str
 from common.model.db.BaseDto import BaseDto
 
 
 @dataclass
+@to_str
 class CleanDataParamDto(BaseDto):
     __tablename__ = 'clean_data_param'
 
@@ -16,6 +18,3 @@ class CleanDataParamDto(BaseDto):
     param_set: Mapped[int] = mapped_column(ForeignKey(CleanDataDto.id))
     type: Mapped[int] = mapped_column(ForeignKey(CleanDataParamsDictionaryDto.id))
     value: Mapped[str] = mapped_column(String(length=512))
-
-    def __str__(self):
-        return f"id={self.id}, param_set={self.param_set}, type={self.type}, value={self.value}"

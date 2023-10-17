@@ -1,9 +1,11 @@
 from sqlalchemy import Integer, String, BigInteger, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
+from common.lib.to_str import to_str
 from common.model.db.BaseDto import BaseDto
 
 
+@to_str
 class OffsetPointerDto(BaseDto):
     __tablename__ = 'offset_pointer'
 
@@ -14,6 +16,3 @@ class OffsetPointerDto(BaseDto):
 
     def get_table(self):
         return self.__table__
-
-    def __str__(self):
-        return f'id={self.id}, key={self.key}, value={self.value}, is_active={self.is_active}'

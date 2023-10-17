@@ -1,3 +1,4 @@
+from DateTime import DateTime
 from sqlalchemy import BigInteger, ForeignKey, String
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -12,4 +13,4 @@ class FilterOptionsTable(BaseDto):
     value: Mapped[str] = mapped_column(String(30))
     type: Mapped[int] = mapped_column(ForeignKey('filter_types.id'))
     fetch_options: Mapped[int] = mapped_column(ForeignKey('fetch_options.id'))
-    created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True))
+    created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), default=DateTime().ISO())

@@ -1,9 +1,11 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import mapped_column, Mapped
 
+from common.lib.to_str import to_str
 from common.model.db.BaseDto import BaseDto
 
 
+@to_str
 class FilterTypesTable(BaseDto):
     __tablename__ = 'filter_types'
 
