@@ -11,11 +11,18 @@ class DbLikeDataSource:
 
     def __init__(self, data_provider: DataProvider, name: str = 'db_like_data_source'):
         self._data_provider = data_provider
-        self._session = data_provider.connect()
         self.name = name
 
     def open_session(self) -> Session:
-        return self._data_provider.create_session()
+        if self._session is None or not self._session.in_transaction():
+            self._session = self._data_provider.create_session()
+
+        return self._session
+
+    def close_session(self):
+        if self._session is not None and not self._session.in_transaction():
+            self._session.close()
+            self._session = None
 
     def get_connection(self) -> Connection:
         return self._data_provider.get_connection()

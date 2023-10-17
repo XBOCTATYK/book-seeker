@@ -10,24 +10,23 @@ class AbstractRepository:
     def __init__(self, data_source: DbLikeDataSource):
         self._data_source = data_source
 
-    def _get_current_session(self) -> Session:
-        if self._session is None:
-            session = self._data_source.open_session()
-        else:
-            session = self._session
+    def _eval(self, fn):
+        session: Session = self._data_source.open_session()
+        result = fn(session)
+        self._data_source.close_session()
 
-        self._session = session
-        return session
+        return result
 
     def _eval_in_transaction(self, fn):
-        session: Session = self._get_current_session()
+        session: Session = self._data_source.open_session()
         is_transaction_started_earlier = session.in_transaction()
 
         try:
-            if not session.in_transaction():
+            if not is_transaction_started_earlier:
                 session.begin()
 
             result = fn(session)
+            session.expunge_all()
 
             if not is_transaction_started_earlier:
                 session.commit()
@@ -38,8 +37,7 @@ class AbstractRepository:
             session.rollback()
             raise error
         finally:
-            if not session.in_transaction():
-                session.close_all()
+            self._data_source.close_session()
 
 
 

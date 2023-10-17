@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, URL
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, close_all_sessions
 
 from datasource.configs.DbConfig import DbConfig
 from datasource.providers.DataProvider import DataProvider
@@ -51,3 +51,6 @@ class PostgresDataProvider(DataProvider):
                 .execution_options(schema_translate_map={None: self.config['scheme']})
 
         return self.connection
+
+    def __del__(self):
+        close_all_sessions()

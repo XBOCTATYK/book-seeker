@@ -17,7 +17,7 @@ class OffsetPointerRepository(AbstractRepository):
         self._repository_name = repo_name
 
     def get_offset(self):
-        return self._eval_in_transaction(self._get_by_key)
+        return self._eval(self._get_by_key)
 
     def update_value(self, value: str):
         return self._eval_in_transaction(lambda sess: self._save(sess, value))
