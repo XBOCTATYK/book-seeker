@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
@@ -29,8 +29,15 @@ class RawDataRepository(AbstractRepository):
     def save(self, raw_options_data_dto: RawOptionsDataDto) -> int:
         return self._eval_in_transaction(lambda sess: sess.add(raw_options_data_dto))
 
+    def save_all(self, list_dto: List[RawOptionsDataDto]):
+        return self._eval_in_transaction(lambda sess: self._save_all(sess, list_dto))
+
     def find_next(self) -> Optional[RawOptionsDataDto]:
         return self._eval_in_transaction(self._find_next)
+
+    def _save_all(self, sess: Session, list_dto: List[RawOptionsDataDto]):
+        sess.add_all(list_dto)
+        sess.flush(list_dto)
 
     def _find_next(self, sess: Session) -> Optional[RawOptionsDataDto]:
         offset = self._offset_pointer_repository.get_offset()

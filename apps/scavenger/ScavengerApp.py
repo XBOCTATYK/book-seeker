@@ -38,7 +38,7 @@ class ScavengerApp(AbstractApp):
         db_config = self._config['db']
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config))
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source, self._analyser_offset_repository_name)
-        self._repository = RawDataRepository(self._data_source, self._analyser_offset_repository)
+        self._repository = RawDataRepository(DbLikeDataSource(PostgresDataProvider(db_config)), self._analyser_offset_repository)
         self._fiter_fetcher = FilterFetcher(self._data_source)
         options = self._fiter_fetcher.fetch()
         print(options)
@@ -47,11 +47,10 @@ class ScavengerApp(AbstractApp):
         print(data)
 
         # writes possible hotels to repository
-        for item in data['b_hotels']:
-            self._repository.save(
-                RawOptionsDataDto(
+        items = list(map(lambda item: RawOptionsDataDto(
                     raw_data=json.JSONEncoder().encode(item),
                     writer=os.getlogin(),
                     datetime=DateTime().ISO()
-                )
-            )
+                ), data['b_hotels']))
+
+        self._repository.save_all(items)
