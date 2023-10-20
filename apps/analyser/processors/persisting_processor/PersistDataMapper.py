@@ -13,8 +13,7 @@ class PersistDataMapper:
         values = []
 
         for selector in selectors:
-            selector_parts = split(selector, '.')
-            values.append({'type': self._dictionary.select_by_id(selector), 'value': get(data, selector_parts)})
+            values.append({'type': self._dictionary.select_by_id(selector), 'value': data[selector]})
 
         filtered_values = list(filter(lambda x: x['value'] is not None, values))
 
