@@ -1,6 +1,6 @@
-from apps.analyser.model.RawDataDecodedDto import RawDataDecodedDto
+from typing import List
 
 
 class AbstractProcessor:
-    def process(self, dto: RawDataDecodedDto):
+    def process(self, values: List[dict]):
         return None

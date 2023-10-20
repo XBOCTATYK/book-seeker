@@ -2,20 +2,18 @@ from common.services.DbDictionary import DbDictionary
 from pydash import get, split
 
 
-class ClearDataSelector:
+class ClearDataSelectorService:
     _dictionary: DbDictionary
 
     def __init__(self, dictionary: DbDictionary):
         self._dictionary = dictionary
 
-    def select_values(self, data: dict) -> list:
+    def select_to_dict(self, data: dict) -> dict[str, str]:
         selectors = self._dictionary.values()
-        values = []
+        output_dict = {}
 
         for selector in selectors:
             selector_parts = split(selector, '.')
-            values.append({'type': self._dictionary.select_by_id(selector), 'value': get(data, selector_parts)})
+            output_dict.setdefault(selector, get(data, selector_parts))
 
-        filtered_values = list(filter(lambda x: x['value'] is not None, values))
-
-        return filtered_values
+        return output_dict

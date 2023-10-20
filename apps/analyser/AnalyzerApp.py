@@ -3,11 +3,11 @@ from typing import List
 from apps.AbstractApp import AbstractApp
 from apps.analyser.RecordDecoder import RecordDecoder
 from apps.analyser.mappers.RawDataDecodedDtoMapper import RawDataDecodedDtoMapper
+from apps.analyser.model.RawDataDecodedDto import RawDataDecodedDto
 from apps.analyser.processors.AbstractProcessor import AbstractProcessor
-from apps.analyser.processors.clearing_processor.ClearDataSelector import ClearDataSelector
-from apps.analyser.processors.clearing_processor.ClearingDictionary import ClearingDictionary
-from apps.analyser.processors.clearing_processor.ClearingProcessor import ClearingProcessor
-from apps.analyser.repositories.CleanDataRepository import CleanDataRepository
+from apps.analyser.processors.filtering_processor.FilteringProcesor import FilteringProcessor
+from apps.analyser.services.ClearDataSelectorService import ClearDataSelectorService
+from apps.analyser.model.dictionaries.ClearingDictionary import ClearingDictionary
 from apps.scavenger.services.RawDataRepository import RawDataRepository
 from common.mappers.AbstractMapper import AbstractMapper
 from common.services.OffsetPointerRepository import OffsetPointerRepository
@@ -22,7 +22,10 @@ class AnalyzerApp(AbstractApp):
     _analyser_offset_repository_name = 'analyzer'
     _repository = None
     _db_raw_data_mapper: AbstractMapper = None
-    _processors: List[AbstractProcessor] = []
+    _clear_data_selector_service: ClearDataSelectorService
+    _processors: List[AbstractProcessor] = [
+        FilteringProcessor()
+    ]
 
     def __init__(self, config: dict):
         super().__init__(config)
@@ -36,12 +39,18 @@ class AnalyzerApp(AbstractApp):
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source,
                                                                    self._analyser_offset_repository_name)
         self._repository = RawDataRepository(self._data_source, self._analyser_offset_repository)
-        self._processors.append(ClearingProcessor(ClearDataSelector(
-            ClearingDictionary(self._data_source)),
-            CleanDataRepository(self._data_source)
-        ))
+        clearing_dictionary = ClearingDictionary(self._data_source)
+        # self._processors.append(
+        #     PersistingProcessor(CleanDataRepository(self._data_source), PersistDataMapper(clearing_dictionary))
+        # )
+        self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
 
-        dto = self._db_raw_data_mapper.convert(self._repository.find_next())
+        dto: RawDataDecodedDto = self._db_raw_data_mapper.convert(self._repository.find_next())
 
+        selected_values = [self._clear_data_selector_service.select_to_dict(dto.data)]
+
+        result = None
         for processor in self._processors:
-            processor.process(dto)
+            result = processor.process(selected_values)
+
+        print(result)
