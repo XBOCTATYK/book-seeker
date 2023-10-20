@@ -45,7 +45,7 @@ class AnalyzerApp(AbstractApp):
         # )
         self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
 
-        dto: RawDataDecodedDto = self._db_raw_data_mapper.convert(self._repository.find_next())
+        dto: RawDataDecodedDto = self._db_raw_data_mapper.convert(self._repository.find_next_n(4))
 
         selected_values = [self._clear_data_selector_service.select_to_dict(dto.data)]
 

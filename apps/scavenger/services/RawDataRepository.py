@@ -35,6 +35,9 @@ class RawDataRepository(AbstractRepository):
     def find_next(self) -> Optional[RawOptionsDataDto]:
         return self._eval_in_transaction(self._find_next)
 
+    def find_next_n(self, count: int) -> List[RawOptionsDataDto]:
+        return self._eval_in_transaction(lambda sess: self._find_next_n(sess, count))
+
     def _save_all(self, sess: Session, list_dto: List[RawOptionsDataDto]):
         sess.add_all(list_dto)
         sess.flush(list_dto)
@@ -57,3 +60,17 @@ class RawDataRepository(AbstractRepository):
         self._offset_pointer_repository.update_value(raw_data_dto.id + 1)
 
         return raw_data_dto
+
+    def _find_next_n(self, sess: Session, count: int) -> List[RawOptionsDataDto]:
+        offset = self._offset_pointer_repository.get_offset()
+        next_offset = offset + count
+
+        search_statement = select(RawOptionsDataDto).where(RawOptionsDataDto.id >= offset)\
+            .where(RawOptionsDataDto.id < next_offset)
+        raw_data_db_result = sess.execute(search_statement)
+        raw_data_column_set = raw_data_db_result.all()
+
+        self._offset_pointer_repository.update_value(next_offset)
+        raw_data_dto_list = list(map(lambda x: x[0], raw_data_column_set))
+
+        return raw_data_dto_list
