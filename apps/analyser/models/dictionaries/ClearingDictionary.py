@@ -1,4 +1,4 @@
-from apps.analyser.model.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
+from apps.analyser.models.db.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
 from common.services.DbDictionary import DbDictionary
 from datasource.DbLikeDataSource import DbLikeDataSource
 

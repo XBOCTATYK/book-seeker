@@ -1,11 +1,11 @@
 from sqlalchemy import Connection
 from sqlalchemy.dialects.postgresql import insert
 
-from apps.analyser.model.CleanDataDto import CleanDataDto
-from apps.analyser.model.CleanDataParamDto import CleanDataParamDto
-from apps.analyser.model.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
-from apps.analyser.model.FilteredResultDto import FilteredResultDto
-from apps.analyser.model.ParamWeightDto import ParamWeightDto
+from apps.analyser.models.db.CleanDataDto import CleanDataDto
+from apps.analyser.models.db.CleanDataParamDto import CleanDataParamDto
+from apps.analyser.models.db.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
+from apps.analyser.models.db.FilteredResultDto import FilteredResultDto
+from apps.analyser.models.db.ParamWeightDto import ParamWeightDto
 
 from apps.db_migrations.dictionaries import migration_dictionaries
 from apps.scavenger.models.db.FetchOptionsTable import FetchOptionsTable

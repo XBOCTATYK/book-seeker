@@ -1,4 +1,4 @@
-from apps.analyser.model.RawDataDecodedDto import RawDataDecodedDto
+from apps.analyser.models.db.RawDataDecodedDto import RawDataDecodedDto
 from common.mappers.AbstractMapper import AbstractMapper
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.Decoder import Decoder

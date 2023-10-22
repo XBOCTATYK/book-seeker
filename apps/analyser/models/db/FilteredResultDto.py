@@ -3,7 +3,7 @@ from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import mapped_column, Mapped
 
-from apps.analyser.model.CleanDataDto import CleanDataDto
+from apps.analyser.models.db.CleanDataDto import CleanDataDto
 from common.lib.to_str import to_str
 from common.model.db.BaseDto import BaseDto
 

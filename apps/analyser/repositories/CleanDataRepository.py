@@ -3,8 +3,8 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from apps.analyser.model.CleanDataDto import CleanDataDto
-from apps.analyser.model.CleanDataParamDto import CleanDataParamDto
+from apps.analyser.models.db.CleanDataDto import CleanDataDto
+from apps.analyser.models.db.CleanDataParamDto import CleanDataParamDto
 from common.services.AbstractRepository import AbstractRepository
 
 
