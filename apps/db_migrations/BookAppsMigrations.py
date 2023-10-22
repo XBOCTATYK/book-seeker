@@ -11,6 +11,7 @@ from apps.db_migrations.dictionaries import migration_dictionaries
 from apps.scavenger.models.db.FetchOptionsTable import FetchOptionsTable
 from apps.scavenger.models.db.FilterOptionsTable import FilterOptionsTable
 from apps.scavenger.models.db.FilterTypesTable import FilterTypesTable
+from apps.scavenger.models.db.RawFetchOptions import RawFetchOptions
 from common.model.db.AppConfigDto import AppConfigDto
 from common.model.db.OffsetPointerDto import OffsetPointerDto
 from datasource import DbLikeDataSource
@@ -33,7 +34,8 @@ class BookAppsMigrations:
         CleanDataParamsDictionaryDto,
         CleanDataParamDto,
         ParamWeightDto,
-        FilteredResultDto
+        FilteredResultDto,
+        RawFetchOptions
     ]
 
     def __init__(self, data_source: DbLikeDataSource, config: DbConfig):
