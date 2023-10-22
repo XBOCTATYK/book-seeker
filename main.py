@@ -1,5 +1,6 @@
 # This is a sample Python scripf
 from apps.analyser.AnalyzerApp import AnalyzerApp
+from apps.notifier.NotifierApp import NotifierApp
 from apps.scavenger.ScavengerApp import ScavengerApp
 from apps.scavenger.models.logic.FilterOptions import FilterOptions
 from apps.scavenger.models.mappers.filter_options_mapper import FilterOptionsSerializer
@@ -29,7 +30,9 @@ if __name__ == '__main__':
 
     # ScavengerApp(config).start()
 
-    AnalyzerApp(config).start()
+    # AnalyzerApp(config).start()
+
+    NotifierApp(config).start()
 
     # options = FilterFetcher(data_source).fetch()
 
