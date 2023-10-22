@@ -8,7 +8,7 @@ from apps.scavenger.models.mappers.filter_options_mapper import FilterOptionsSer
 from apps.scavenger.services.BookDataFetcher import BookDataFetcher
 from apps.scavenger.services.DataFetcher import DataFetcher
 from apps.scavenger.services.FilterFetcher import FilterFetcher
-from apps.scavenger.services.RawDataRepository import RawDataRepository
+from apps.scavenger.repositories.RawDataRepository import RawDataRepository
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource

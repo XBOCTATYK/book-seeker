@@ -4,7 +4,7 @@ from sqlalchemy.dialects.postgresql import insert
 from apps.analyser.models.db.CleanDataDto import CleanDataDto
 from apps.analyser.models.db.CleanDataParamDto import CleanDataParamDto
 from apps.analyser.models.db.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
-from apps.analyser.models.db.FilteredResultDto import FilteredResultDto
+from apps.transit_data_app.models.db.FilteredResultDto import FilteredResultDto
 from apps.analyser.models.db.ParamWeightDto import ParamWeightDto
 
 from apps.db_migrations.dictionaries import migration_dictionaries

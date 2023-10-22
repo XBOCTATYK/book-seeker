@@ -1,4 +1,5 @@
 from sqlalchemy import update, select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from common.model.db.OffsetPointerDto import OffsetPointerDto
@@ -25,9 +26,17 @@ class OffsetPointerRepository(AbstractRepository):
     def _get_by_key(self, sess: Session):
         offset_search_statement = select(OffsetPointerDto).where(OffsetPointerDto.key == self._repository_name)
         offset_db_result = sess.execute(offset_search_statement)
-        offset = offset_db_result.first()[0].value
+        offset = offset_db_result.one_or_none()
+
+        if offset is None:
+            self._insert_new_record(sess)
+            offset = 0
 
         return offset
+
+    def _insert_new_record(self, sess: Session):
+        insert_statement = insert(OffsetPointerDto).values({'key': self._repository_name, 'value': 0, 'is_active': True})
+        return sess.execute(insert_statement)
 
     def _save(self, sess: Session, value: str):
         offset_statement = update(OffsetPointerDto) \

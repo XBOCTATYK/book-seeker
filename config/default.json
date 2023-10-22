@@ -10,5 +10,8 @@
   "web": {
     "baseUrl": "https://site.com",
     "optionsUrl": "/options"
+  },
+  "bot": {
+    "estimate_top": 10
   }
 }

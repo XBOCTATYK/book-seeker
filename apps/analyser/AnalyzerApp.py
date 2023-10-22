@@ -11,7 +11,7 @@ from apps.analyser.processors.persisting_processor.PersistingProcessor import Pe
 from apps.analyser.repositories.CleanDataRepository import CleanDataRepository
 from apps.analyser.services.ClearDataSelectorService import ClearDataSelectorService
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
-from apps.scavenger.services.RawDataRepository import RawDataRepository
+from apps.scavenger.repositories.RawDataRepository import RawDataRepository
 from common.mappers.AbstractMapper import AbstractMapper
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.OffsetPointerRepository import OffsetPointerRepository

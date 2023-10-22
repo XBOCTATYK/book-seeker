@@ -3,17 +3,12 @@ from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from common.lib.db.offset_functions import find_element_with_minimal_id_more_than_current
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.AbstractRepository import AbstractRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
 
-
-# TODO: extract it to a separate file
-def find_element_with_minimal_id(sess: Session):
-    additional_search_statement = select(RawOptionsDataDto).order_by(RawOptionsDataDto.id).limit(1)
-    raw_data_db_result = sess.execute(additional_search_statement)
-    return raw_data_db_result.one_or_none()
 
 
 class RawDataRepository(AbstractRepository):
@@ -51,7 +46,7 @@ class RawDataRepository(AbstractRepository):
 
         # sets minimal found id if element wasn't found
         if raw_data_dto_set is None:
-            raw_data_dto_set = find_element_with_minimal_id(sess)
+            raw_data_dto_set = find_element_with_minimal_id_more_than_current(sess, RawOptionsDataDto, offset)
 
         if raw_data_dto_set is None:
             return None

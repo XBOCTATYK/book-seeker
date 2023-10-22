@@ -5,6 +5,7 @@ from apps.scavenger.ScavengerApp import ScavengerApp
 from apps.scavenger.models.logic.FilterOptions import FilterOptions
 from apps.scavenger.models.mappers.filter_options_mapper import FilterOptionsSerializer
 from apps.scavenger.services.FilterFetcher import FilterFetcher
+from apps.transit_data_app.TransitDataApp import TransitDataApp
 from configlib.ConfigService import ConfigService
 from configlib.formatters.DbConfigFormatter import DbConfigFormatter
 from configlib.formatters.JsonConfigFormatter import JsonConfigFormatter
@@ -32,7 +33,9 @@ if __name__ == '__main__':
 
     # AnalyzerApp(config).start()
 
-    NotifierApp(config).start()
+    # NotifierApp(config).start()
+
+    TransitDataApp(config).start()
 
     # options = FilterFetcher(data_source).fetch()
 
