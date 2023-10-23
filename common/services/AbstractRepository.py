@@ -17,7 +17,7 @@ class AbstractRepository:
 
         return result
 
-    def _eval_in_transaction(self, fn):
+    def _call_in_transaction(self, fn):
         session: Session = self._data_source.open_session()
         is_transaction_started_earlier = session.in_transaction()
 

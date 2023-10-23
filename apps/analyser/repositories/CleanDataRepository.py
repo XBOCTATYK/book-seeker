@@ -10,7 +10,7 @@ from common.services.AbstractRepository import AbstractRepository
 
 class CleanDataRepository(AbstractRepository):
     def insert_clear_data(self, values: list):
-        return self._eval_in_transaction(lambda sess: self._insert_clear_data(sess, values))
+        return self._call_in_transaction(lambda sess: self._insert_clear_data(sess, values))
 
     def _insert_clear_data(self, sess: Session, values: list):
         insert_clear_data_statements = insert(CleanDataDto)\

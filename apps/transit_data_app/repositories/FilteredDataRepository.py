@@ -20,7 +20,7 @@ class FilteredDataRepository(AbstractRepository):
         self._offset_pointer_repository = offset_pointer_repository
 
     def process_next_n(self, count: int, fn: Callable[[List[FilteredResultDto]], T]) -> T:
-        return self._eval_in_transaction(lambda sess: self._process_next_n(sess, count, fn))
+        return self._call_in_transaction(lambda sess: self._process_next_n(sess, count, fn))
 
     def _process_next_n(self, sess: Session, count: int, fn: Callable[[List[FilteredResultDto]], T]) -> T:
         offset = self._offset_pointer_repository.get_offset()
