@@ -54,6 +54,8 @@ class OffsetPointerRepository(AbstractRepository):
         if offset is None:
             self._insert_new_record(sess)
             offset = 0
+        else:
+            offset = offset[0].value
 
         return offset
 

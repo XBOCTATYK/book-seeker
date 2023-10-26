@@ -31,11 +31,11 @@ if __name__ == '__main__':
 
     # ScavengerApp(config).start()
 
-    # AnalyzerApp(config).start()
+    AnalyzerApp(config).start()
 
     # NotifierApp(config).start()
 
-    TransitDataApp(config).start()
+    # TransitDataApp(config).start()
 
     # options = FilterFetcher(data_source).fetch()
 

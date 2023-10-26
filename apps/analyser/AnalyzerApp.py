@@ -11,6 +11,7 @@ from apps.analyser.processors.persisting_processor.PersistingProcessor import Pe
 from apps.analyser.repositories.CleanDataRepository import CleanDataRepository
 from apps.analyser.services.ClearDataSelectorService import ClearDataSelectorService
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
+from apps.analyser.services.ProcessorRunner import ProcessorRunner
 from apps.scavenger.repositories.RawDataRepository import RawDataRepository
 from common.mappers.AbstractMapper import AbstractMapper
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
@@ -30,12 +31,14 @@ class AnalyzerApp(AbstractApp):
     _processors: List[AbstractProcessor] = [
         FilteringProcessor()
     ]
+    _processor_runner = None
 
     def __init__(self, config: dict):
         super().__init__(config)
 
         self._config = config
         self._db_raw_data_mapper = RawDataDecodedDtoMapper(RecordDecoder())
+        self._processor_runner = ProcessorRunner(self._processors)
 
     def start(self):
         db_config = self._config['db']
@@ -49,12 +52,11 @@ class AnalyzerApp(AbstractApp):
         )
         self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
 
-        dto_list: List[RawOptionsDataDto] = self._repository.find_next_n(4)
-        decoded_dto_list: List[RawDataDecodedDto] = list(map(lambda dto: self._db_raw_data_mapper.convert(dto), dto_list))
-        selected_values = list(map(lambda dto: self._clear_data_selector_service.select_to_dict(dto.data), decoded_dto_list))
-
-        result = []
-        for processor in self._processors:
-            result = processor.process(selected_values)
-
+        result = self._repository.process_next_n(4, self._process_data)
         print(result)
+
+    def _process_data(self, dto_list: List[RawOptionsDataDto]):
+        decoded_dto_list: List[RawDataDecodedDto] = list(map(lambda dto: self._db_raw_data_mapper.convert(dto), dto_list))
+        selected_values: List[dict[str, str]] = list(map(lambda dto: self._clear_data_selector_service.select_to_dict(dto.data), decoded_dto_list))
+
+        return self._processor_runner.process(selected_values)
