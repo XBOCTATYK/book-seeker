@@ -63,7 +63,9 @@ class RawDataRepository(AbstractRepository):
         sess.flush(list_dto)
 
     def _find_next(self, sess: Session, offset: int) -> Optional[RawOptionsDataDto]:
-        search_statement = select(RawOptionsDataDto).where(RawOptionsDataDto.id == offset)
+        search_statement = select(RawOptionsDataDto)\
+            .where(RawOptionsDataDto.id == offset)\
+            .with_for_update(skip_locked=True)
         raw_data_db_result = sess.execute(search_statement)
         raw_data_dto_set = raw_data_db_result.one_or_none()
 
@@ -73,7 +75,7 @@ class RawDataRepository(AbstractRepository):
 
     def _find_next_n(self, sess: Session, low: int, top: int) -> List[RawOptionsDataDto]:
         search_statement = select(RawOptionsDataDto).where(RawOptionsDataDto.id >= low) \
-            .where(RawOptionsDataDto.id < top)
+            .where(RawOptionsDataDto.id < top).with_for_update(skip_locked=True)
         raw_data_db_result = sess.execute(search_statement)
         raw_data_column_set = raw_data_db_result.all()
 
