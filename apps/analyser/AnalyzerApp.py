@@ -4,14 +4,17 @@ from apps.AbstractApp import AbstractApp
 from apps.analyser.RecordDecoder import RecordDecoder
 from apps.analyser.mappers.RawDataDecodedDtoMapper import RawDataDecodedDtoMapper
 from apps.analyser.models.db.RawDataDecodedDto import RawDataDecodedDto
+from apps.analyser.models.dictionaries.WeightDictionary import WeightDictionary
 from apps.analyser.processors.AbstractProcessor import AbstractProcessor
 from apps.analyser.processors.filtering_processor.FilteringProcesor import FilteringProcessor
 from apps.analyser.processors.persisting_processor.PersistDataMapper import PersistDataMapper
 from apps.analyser.processors.persisting_processor.PersistingProcessor import PersistingProcessor
+from apps.analyser.processors.top_best_processor.TopBestProcessor import TopBestProcessor
 from apps.analyser.repositories.CleanDataRepository import CleanDataRepository
 from apps.analyser.services.ClearDataSelectorService import ClearDataSelectorService
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
 from apps.analyser.services.ProcessorRunner import ProcessorRunner
+from apps.analyser.services.SummarizeGoodsService import SummarizeGoodsService
 from apps.scavenger.repositories.RawDataRepository import RawDataRepository
 from common.mappers.AbstractMapper import AbstractMapper
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
@@ -49,6 +52,9 @@ class AnalyzerApp(AbstractApp):
         clearing_dictionary = ClearingDictionary(self._data_source)
         self._processors.append(
             PersistingProcessor(CleanDataRepository(self._data_source), PersistDataMapper(clearing_dictionary))
+        )
+        self._processors.append(
+            TopBestProcessor(SummarizeGoodsService(WeightDictionary(self._data_source)))
         )
         self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
 
