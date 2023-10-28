@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Type
 
 from sqlalchemy import select
@@ -8,7 +9,7 @@ from common.model.db.BaseDto import BaseDto
 from datasource.DbLikeDataSource import DbLikeDataSource
 
 
-class DbDictionary:
+class DbDictionary(ABC):
     _data_source: DbLikeDataSource
     _dict_items: dict
 

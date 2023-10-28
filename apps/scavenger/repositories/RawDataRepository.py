@@ -3,7 +3,6 @@ from typing import Optional, List, TypeVar, Callable
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from common.lib.db.offset_functions import find_element_with_minimal_id_more_than_current
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.AbstractRepository import AbstractRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository

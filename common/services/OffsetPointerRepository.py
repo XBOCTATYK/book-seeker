@@ -60,8 +60,9 @@ class OffsetPointerRepository(AbstractRepository):
         return offset
 
     def _insert_new_record(self, sess: Session):
-        insert_statement = insert(OffsetPointerDto).values(
-            {'key': self._repository_name, 'value': 0, 'is_active': True})
+        insert_statement = insert(OffsetPointerDto)\
+            .values({'key': self._repository_name, 'value': 0, 'is_active': True})
+
         return sess.execute(insert_statement)
 
     def _save(self, sess: Session, value: str):

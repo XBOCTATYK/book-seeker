@@ -16,7 +16,7 @@ from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDiction
 from apps.analyser.services.ProcessorRunner import ProcessorRunner
 from apps.analyser.services.SummarizeGoodsService import SummarizeGoodsService
 from apps.scavenger.repositories.RawDataRepository import RawDataRepository
-from common.mappers.AbstractMapper import AbstractMapper
+from common.mappers.OneDirectionMapper import OneDirectionMapper
 from common.model.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
@@ -29,7 +29,7 @@ class AnalyzerApp(AbstractApp):
     _analyser_offset_repository: OffsetPointerRepository = None
     _analyser_offset_repository_name = 'analyzer'
     _repository = None
-    _db_raw_data_mapper: AbstractMapper = None
+    _db_raw_data_mapper: OneDirectionMapper = None
     _clear_data_selector_service: ClearDataSelectorService
     _processors: List[AbstractProcessor] = [
         FilteringProcessor()
