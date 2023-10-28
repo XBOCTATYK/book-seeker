@@ -1,9 +1,11 @@
+from abc import ABC
+
 from sqlalchemy.orm import Session
 
 from datasource.DbLikeDataSource import DbLikeDataSource
 
 
-class AbstractRepository:
+class AbstractRepository(ABC):
     _data_source = None
     _session: Session = None
 

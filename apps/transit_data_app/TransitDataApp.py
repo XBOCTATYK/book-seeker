@@ -1,3 +1,5 @@
+from typing import List
+
 from apps.AbstractApp import AbstractApp
 from apps.transit_data_app.repositories.FilteredDataRepository import FilteredDataRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository
@@ -21,6 +23,11 @@ class TransitDataApp(AbstractApp):
 
     def start(self):
         self._filtered_data_repository.process_next_n(10, self._process)
+
+    def exports(self) -> dict[str, any]:
+        return {
+            'filtered_data_repository': self._filtered_data_repository
+        }
 
     def _process(self, data):
         print(data)

@@ -1,6 +1,7 @@
 from sqlalchemy import Connection
 from sqlalchemy.dialects.postgresql import insert
 
+from apps.AbstractApp import AbstractApp
 from apps.analyser.models.db.CleanDataDto import CleanDataDto
 from apps.analyser.models.db.CleanDataParamDto import CleanDataParamDto
 from apps.analyser.models.db.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
@@ -19,7 +20,7 @@ from common.model.db.RawOptionsDataDto import RawOptionsDataDto
 from datasource.configs.DbConfig import DbConfig
 
 
-class BookAppsMigrations:
+class BookAppsMigrations(AbstractApp):
     models = []
     data_source: DbLikeDataSource
     config = None
@@ -35,10 +36,12 @@ class BookAppsMigrations:
         CleanDataParamDto,
         ParamWeightDto,
         FilteredResultDto,
-        RawFetchOptions
+        RawFetchOptions,
     ]
 
     def __init__(self, data_source: DbLikeDataSource, config: DbConfig):
+        super().__init__(config)
+
         self.data_source = data_source
         self.config = config
 
@@ -51,6 +54,12 @@ class BookAppsMigrations:
         connection.commit()
 
         self._insert_dictionaries(connection)
+
+    def stop(self):
+        self.data_source.close_session()
+
+    def exports(self) -> dict:
+        return {}
 
     def _insert_dictionaries(self, connection: Connection):
         for key in migration_dictionaries.keys():

@@ -13,13 +13,10 @@ T = TypeVar('T')
 
 
 class RawDataRepository(AbstractRepository):
-    data_source: DbLikeDataSource = None
-    _session: Session = None
     _offset_pointer_repository = None
 
     def __init__(self, data_source: DbLikeDataSource, offset_pointer_repository: OffsetPointerRepository):
         super().__init__(data_source)
-        self.data_source = data_source
         self._offset_pointer_repository = offset_pointer_repository
 
     def save(self, raw_options_data_dto: RawOptionsDataDto) -> int:

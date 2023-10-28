@@ -61,6 +61,12 @@ class AnalyzerApp(AbstractApp):
         result = self._repository.process_next_n(4, self._process_data)
         print(result)
 
+    def stop(self):
+        self._data_source.close_session()
+
+    def exports(self) -> dict:
+        return {}
+
     def _process_data(self, dto_list: List[RawOptionsDataDto]):
         decoded_dto_list: List[RawDataDecodedDto] = list(map(lambda dto: self._db_raw_data_mapper.convert(dto), dto_list))
         selected_values: List[dict[str, str]] = list(map(lambda dto: self._clear_data_selector_service.select_to_dict(dto.data), decoded_dto_list))

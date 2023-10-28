@@ -28,8 +28,8 @@ class ScavengerApp(AbstractApp):
 
     def __init__(self, config: dict):
         super().__init__(config)
-        self._config = config
 
+        self._config = config
         self._data_fetcher = BookDataFetcher(self._url_utils, FilterOptionsSerializer(), config['web'], config['book'], config['secret_headers'])
         # self._data_fetcher = LocalFileDataFetcher()
 
@@ -54,3 +54,9 @@ class ScavengerApp(AbstractApp):
                 ), data['b_hotels']))
 
         self._repository.save_all(items)
+
+    def stop(self):
+        self._data_source.close_session()
+
+    def exports(self) -> dict:
+        return {}

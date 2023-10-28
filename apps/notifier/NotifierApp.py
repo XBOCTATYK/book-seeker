@@ -33,3 +33,9 @@ class NotifierApp(AbstractApp):
             application.add_handler(command_handler)
 
         application.run_polling(poll_interval=2000)
+
+    def stop(self):
+        pass
+
+    def exports(self) -> dict:
+        pass
