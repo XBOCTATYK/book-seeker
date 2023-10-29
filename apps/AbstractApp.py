@@ -23,6 +23,6 @@ class AbstractApp(ABC):
     def exports(self) -> dict:
         return {}
 
-    @classmethod
-    def migrations(cls):
+    @staticmethod
+    def migrations():
         pass

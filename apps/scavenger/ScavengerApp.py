@@ -4,12 +4,13 @@ import os
 from DateTime import DateTime
 
 from apps.AbstractApp import AbstractApp
+from apps.scavenger.db_migrations.ScavengetAppMigrationsScheme import ScavengerAppMigrationsScheme
 from apps.scavenger.models.mappers.filter_options_mapper import FilterOptionsSerializer
 from apps.scavenger.services.BookDataFetcher import BookDataFetcher
 from apps.scavenger.services.DataFetcher import DataFetcher
 from apps.scavenger.services.FilterFetcher import FilterFetcher
 from apps.scavenger.repositories.RawDataRepository import RawDataRepository
-from common.model.db.RawOptionsDataDto import RawOptionsDataDto
+from apps.scavenger.models.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
 from datasource.providers.PostgresDataProvider import PostgresDataProvider
@@ -60,3 +61,7 @@ class ScavengerApp(AbstractApp):
 
     def exports(self) -> dict:
         return {}
+
+    @staticmethod
+    def migrations():
+        return ScavengerAppMigrationsScheme

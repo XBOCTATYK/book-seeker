@@ -2,6 +2,7 @@ from typing import List
 
 from apps.AbstractApp import AbstractApp
 from apps.analyser.RecordDecoder import RecordDecoder
+from apps.analyser.db_migrations.AnalyserAppMigrationScheme import AnalyserAppMigrationScheme
 from apps.analyser.mappers.RawDataDecodedDtoMapper import RawDataDecodedDtoMapper
 from apps.analyser.models.db.RawDataDecodedDto import RawDataDecodedDto
 from apps.analyser.models.dictionaries.WeightDictionary import WeightDictionary
@@ -17,7 +18,7 @@ from apps.analyser.services.ProcessorRunner import ProcessorRunner
 from apps.analyser.services.SummarizeGoodsService import SummarizeGoodsService
 from apps.scavenger.repositories.RawDataRepository import RawDataRepository
 from common.mappers.OneDirectionMapper import OneDirectionMapper
-from common.model.db.RawOptionsDataDto import RawOptionsDataDto
+from apps.scavenger.models.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
 from datasource.providers.PostgresDataProvider import PostgresDataProvider
@@ -72,3 +73,7 @@ class AnalyzerApp(AbstractApp):
         selected_values: List[dict[str, str]] = list(map(lambda dto: self._clear_data_selector_service.select_to_dict(dto.data), decoded_dto_list))
 
         return self._processor_runner.process(selected_values)
+
+    @staticmethod
+    def migrations():
+        return AnalyserAppMigrationScheme

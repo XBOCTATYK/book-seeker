@@ -3,7 +3,7 @@ from typing import Optional, List, TypeVar, Callable
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from common.model.db.RawOptionsDataDto import RawOptionsDataDto
+from apps.scavenger.models.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.AbstractRepository import AbstractRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource

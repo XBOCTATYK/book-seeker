@@ -1,4 +1,5 @@
-from sqlalchemy import insert, Connection
+from sqlalchemy import Connection
+from sqlalchemy.dialects.postgresql import insert
 
 from apps.analyser.db_migrations.dictionaries import migration_dictionaries
 from apps.analyser.models.db.ParamWeightDto import ParamWeightDto
@@ -9,5 +10,7 @@ def insert_weights(connection: Connection):
         lambda x: {'param_name': x, 'weight_value': 0},
         migration_dictionaries['clean_data_params_dictionary']
     ))
-    insert_params_statement = insert(ParamWeightDto).values(values_to_insert)
+    insert_params_statement = insert(ParamWeightDto)\
+        .values(values_to_insert)\
+        .on_conflict_do_nothing()
     connection.execute(insert_params_statement)

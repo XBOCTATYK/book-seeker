@@ -18,7 +18,6 @@ class AnalyserAppMigrationScheme(AbstractMigrationScheme):
             CleanDataParamDto,
             CleanDataParamsDictionaryDto,
             ParamWeightDto,
-            RawDataDecodedDto
         ]
 
     def get_dictionaries(self) -> dict[str, List[str]]:

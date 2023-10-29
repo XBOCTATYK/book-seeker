@@ -1,6 +1,6 @@
 from apps.analyser.models.db.RawDataDecodedDto import RawDataDecodedDto
 from common.mappers.OneDirectionMapper import OneDirectionMapper
-from common.model.db.RawOptionsDataDto import RawOptionsDataDto
+from apps.scavenger.models.db.RawOptionsDataDto import RawOptionsDataDto
 from common.services.Decoder import Decoder
 
 

@@ -1,6 +1,7 @@
 from typing import List
 
 from apps.AbstractApp import AbstractApp
+from apps.transit_data_app.db_migrations.TransitDataAppMigrationScheme import TransitDataAppMigrationScheme
 from apps.transit_data_app.repositories.FilteredDataRepository import FilteredDataRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
@@ -31,5 +32,9 @@ class TransitDataApp(AbstractApp):
 
     def _process(self, data):
         print(data)
+
+    @staticmethod
+    def migrations():
+        return TransitDataAppMigrationScheme
 
 

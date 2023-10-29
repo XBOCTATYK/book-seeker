@@ -1,11 +1,13 @@
 # This is a sample Python scripf
 from apps.analyser.AnalyzerApp import AnalyzerApp
 from apps.notifier.NotifierApp import NotifierApp
+from apps.raw_fetch_options_processor.RawFetchOptionsProcessorApp import RawFetchOptionsProcessorApp
 from apps.scavenger.ScavengerApp import ScavengerApp
 from apps.scavenger.models.logic.FilterOptions import FilterOptions
 from apps.scavenger.models.mappers.filter_options_mapper import FilterOptionsSerializer
 from apps.scavenger.services.FilterFetcher import FilterFetcher
 from apps.transit_data_app.TransitDataApp import TransitDataApp
+from common.db_migrations.CommonMigrationScheme import CommonMigrationScheme
 from configlib.ConfigService import ConfigService
 from configlib.formatters.DbConfigFormatter import DbConfigFormatter
 from configlib.formatters.JsonConfigFormatter import JsonConfigFormatter
@@ -31,7 +33,7 @@ if __name__ == '__main__':
 
     # ScavengerApp(config).start()
 
-    AnalyzerApp(config).start()
+    # AnalyzerApp(config).start()
 
     # NotifierApp(config).start()
 
@@ -43,4 +45,13 @@ if __name__ == '__main__':
     # print(options)
     # print(FilterOptionsSerializer().serialize(options[0].filter))
 
-    # BookAppsMigrations(data_source, db_config).start()
+    db_migrations_schemes = list(map(
+        lambda app: app.migrations()(),
+        [AnalyzerApp, ScavengerApp, RawFetchOptionsProcessorApp, TransitDataApp]
+    ))
+
+    BookAppsMigrations(
+        data_source,
+        db_config,
+        [CommonMigrationScheme()] + db_migrations_schemes
+    ).start()
