@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     # ScavengerApp(config).start()
 
-    # AnalyzerApp(config).start()
+    AnalyzerApp(config).start()
 
     # NotifierApp(config).start()
 
@@ -45,13 +45,13 @@ if __name__ == '__main__':
     # print(options)
     # print(FilterOptionsSerializer().serialize(options[0].filter))
 
-    db_migrations_schemes = list(map(
-        lambda app: app.migrations()(),
-        [AnalyzerApp, ScavengerApp, RawFetchOptionsProcessorApp, TransitDataApp]
-    ))
-
-    BookAppsMigrations(
-        data_source,
-        db_config,
-        [CommonMigrationScheme()] + db_migrations_schemes
-    ).start()
+    # db_migrations_schemes = list(map(
+    #     lambda app: app.migrations()(),
+    #     [AnalyzerApp, ScavengerApp, RawFetchOptionsProcessorApp, TransitDataApp]
+    # ))
+    #
+    # BookAppsMigrations(
+    #     data_source,
+    #     db_config,
+    #     [CommonMigrationScheme()] + db_migrations_schemes
+    # ).start()
