@@ -7,4 +7,3 @@ class DataFromUrlDecoder(Decoder):
     def decode(self, target: str) -> T:
         data = urlsplit(target)
 
-        print(data)
