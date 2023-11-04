@@ -1,4 +1,4 @@
-# This is a sample Python scripf
+# This is a sample Python script
 from apps.analyser.AnalyzerApp import AnalyzerApp
 from apps.notifier.NotifierApp import NotifierApp
 from apps.raw_fetch_options_processor.RawFetchOptionsProcessorApp import RawFetchOptionsProcessorApp

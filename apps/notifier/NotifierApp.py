@@ -1,14 +1,14 @@
-from typing import List
+from typing import List, Type
 
 from telegram.ext import ApplicationBuilder, CommandHandler
 
 from apps.AbstractApp import AbstractApp
-from apps.notifier.handlers import TelegramHandler
+from apps.notifier.handlers.TelegramHandler import TelegramHandler
 from apps.notifier.handlers.StartHandlers import StartHandler
 
 
 class NotifierApp(AbstractApp):
-    _handlers: List[TelegramHandler] = [
+    _handlers: List[Type[TelegramHandler]] = [
         StartHandler
     ]
 
