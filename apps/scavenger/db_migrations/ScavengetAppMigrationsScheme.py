@@ -2,6 +2,7 @@ from typing import List, Callable, Type
 
 from sqlalchemy import Connection
 
+from apps.scavenger.models.constants.filter_types_enum import EFilterType
 from apps.scavenger.models.db.FetchOptionsTable import FetchOptionsTable
 from apps.scavenger.models.db.FilterOptionsTable import FilterOptionsTable
 from apps.scavenger.models.db.FilterTypesTable import FilterTypesTable
@@ -10,14 +11,7 @@ from common.model.db.BaseDto import BaseDto
 from apps.scavenger.models.db.RawOptionsDataDto import RawOptionsDataDto
 
 scavenger_app_dictionaries = {
-    'filter_types': [
-        'review_score',
-        'rooms',
-        'oos',
-        'min_price',
-        'max_price',
-        'currency'
-    ]
+    'filter_types': EFilterType.values()
 }
 
 
