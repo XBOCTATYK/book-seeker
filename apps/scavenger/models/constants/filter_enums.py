@@ -5,24 +5,25 @@ class ERoomFacility(Enum):
     AIR_COND = 11
     BATHROOM = 38
 
-    @classmethod
-    def get_prefix(cls):
+    @staticmethod
+    def get_prefix():
         return 'roomfacility'
 
 
 class EHotelFacility(Enum):
     FREE_WIFI = 107
+    SOMETHING = 100
 
-    @classmethod
-    def get_prefix(cls):
+    @staticmethod
+    def get_prefix():
         return 'hotelfacility'
 
 
 class EPaymentDetails(Enum):
-    FREE_CANCELLATION = 2,
-    WITHOUT_CARD = 4,
+    FREE_CANCELLATION = 2
+    WITHOUT_CARD = 4
     NO_PREPAYMENT = 5
 
-    @classmethod
-    def get_prefix(cls):
+    @staticmethod
+    def get_prefix():
         return 'fc'
