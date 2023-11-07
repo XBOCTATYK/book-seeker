@@ -1,2 +1,3 @@
 class FetchOptionsDeserializer:
-    pass
+    def deserialize(self):
+        pass
