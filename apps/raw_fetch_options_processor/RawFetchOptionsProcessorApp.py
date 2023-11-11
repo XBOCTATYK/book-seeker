@@ -25,7 +25,10 @@ class RawFetchOptionsProcessorApp(AbstractApp):
         db_config = self._config['db']
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config))
         self._data_from_url_decoder = DataFromUrlDecoder()
-        self._analyser_offset_repository = OffsetPointerRepository(self._data_source, self._analyser_offset_repository_name)
+        self._analyser_offset_repository = OffsetPointerRepository(
+            self._data_source,
+            self._analyser_offset_repository_name
+        )
         self._raw_fetch_dara_repository = RawFetchOptionsRepository(self._data_source, self._analyser_offset_repository)
 
         self._raw_fetch_dara_repository.process_next_n_records(

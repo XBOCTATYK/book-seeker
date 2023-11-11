@@ -46,7 +46,7 @@ class FetchOptionsMapper:
             persons=3
         )
 
-    def _parse_map_box(self, map_box):
+    def _parse_map_box(self, map_box: str) -> MapViewBox:
         map_box_arr = split(',', map_box)
         return MapViewBox(
             Coordinate(map_box_arr[0], map_box_arr[1]),

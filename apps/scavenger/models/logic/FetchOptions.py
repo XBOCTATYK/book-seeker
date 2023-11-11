@@ -6,7 +6,6 @@ from DateTime import DateTime
 from apps.scavenger.models.logic.MapViewBox import MapViewBox
 
 
-@dataclass
 class FetchOptions(TypedDict):
     map_box: MapViewBox
     checkin: DateTime
