@@ -4,7 +4,6 @@ from apps.notifier.NotifierApp import NotifierApp
 from apps.raw_fetch_options_processor.RawFetchOptionsProcessorApp import RawFetchOptionsProcessorApp
 from apps.scavenger.ScavengerApp import ScavengerApp
 from apps.scavenger.models.constants.filter_types_enum import EFilterType
-from apps.scavenger.models.logic.FilterOptions import FilterOptions
 from apps.scavenger.models.mappers.filter_options_mapper import FilterOptionsSerializer
 from apps.scavenger.services.FilterFetcher import FilterFetcher
 from apps.transit_data_app.TransitDataApp import TransitDataApp
