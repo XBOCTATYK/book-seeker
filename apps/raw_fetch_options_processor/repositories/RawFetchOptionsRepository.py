@@ -28,16 +28,11 @@ class RawFetchOptionsRepository(AbstractRepository):
 
     def _process_next_n_records(self, sess: Session, low: int, top: int, fn: Callable[[List[RawFetchOptions]], T]) -> T:
         record_list = self._find_next_n_records(sess, low, top)
-        result = fn(record_list)
-
-        return result
+        return fn(record_list)
 
     def _find_next_n_records(self, sess: Session, low: int, top: int) -> List[RawFetchOptions]:
         search_statement = select(RawFetchOptions).where(RawFetchOptions.id >= low) \
             .where(RawFetchOptions.id < top).with_for_update(skip_locked=True)
         raw_fetch_options_db_result = sess.execute(search_statement)
-        raw_fetch_options_column_set = raw_fetch_options_db_result.all()
 
-        raw_fetch_options_dto_list = list(map(lambda x: x[0], raw_fetch_options_column_set))
-
-        return raw_fetch_options_dto_list
+        return list(raw_fetch_options_db_result.scalars().all())

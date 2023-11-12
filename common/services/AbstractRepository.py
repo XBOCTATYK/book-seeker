@@ -12,6 +12,9 @@ class AbstractRepository(ABC):
     def __init__(self, data_source: DbLikeDataSource):
         self._data_source = data_source
 
+    def _get_current_session(self):
+        return self._data_source.open_session()
+
     def _eval(self, fn):
         session: Session = self._data_source.open_session()
         result = fn(session)
