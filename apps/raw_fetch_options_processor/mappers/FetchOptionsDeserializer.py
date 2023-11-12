@@ -2,12 +2,12 @@ from apps.scavenger.models.constants.filter_types_enum import EFilterType
 
 
 def map_field(name: str, modifier=lambda x: x):
-    return lambda x: modifier(name) if name in x else ''
+    return lambda x: modifier(x[name]) if name in x else ''
 
 
 class FetchOptionsDeserializer:
-    filter_mappers = dict(map(lambda val: (val, map_field(val)), EFilterType.values()))
-    mappers = {
+    _filter_mappers = dict(map(lambda val: (val, map_field(val)), EFilterType.values()))
+    _mappers = {
         'checkin': map_field('checkin'),
         'checkout': map_field('checkout'),
         'currency': map_field('currency'),
@@ -15,15 +15,22 @@ class FetchOptionsDeserializer:
     }
 
     def deserialize(self, values: dict) -> dict:
-        self.mappers.setdefault('filters', map_field('nflt', self._set_filters))
+        self._mappers.setdefault('filters', map_field('nflt', self._set_filters))
+        self._mappers['rooms'] = map_field('room1')
 
-        self.filter_mappers.setdefault(('min_price', map_field('price', lambda x: x.split('-')[1])))
-        self.filter_mappers.setdefault(('max_price', map_field('price', lambda x: x.split('-')[2])))
-        self.filter_mappers.setdefault(('review_score', map_field('review_score', lambda x: x/10)))
+        self._filter_mappers['min_price'] = map_field(
+            'price',
+            lambda x: x.split('-')[1] if x.split('-')[1] != 'min' else '0'
+        )
+        self._filter_mappers['max_price'] = map_field(
+            'price',
+            lambda x: x.split('-')[2] if x.split('-')[2] != 'max' else '99999'
+        )
+        self._filter_mappers['review_score'] = map_field('review_score', lambda x: int(x) / 10)
 
         result = {}
-        for (name, mapper) in self.mappers:
-            result.setdefault(name, mapper(values[name]))
+        for (name, mapper) in self._mappers.items():
+            result.setdefault(name, mapper(values))
 
         return result
 
@@ -32,12 +39,11 @@ class FetchOptionsDeserializer:
         filters_dict = dict(map(self._split_filter, filters))
 
         result = {}
-        for (key, filter_maper) in self.filter_mappers.items():
-            result.setdefault(key, filter_maper(filters_dict[key] if key in filters_dict else None))
+        for (key, filter_maper) in self._filter_mappers.items():
+            result.setdefault(key, filter_maper(filters_dict))
 
         return result
 
     def _split_filter(self, filter_str: str) -> tuple[str, str]:
         filter_item = filter_str.split('=')
         return filter_item[0], filter_item[1]
-
