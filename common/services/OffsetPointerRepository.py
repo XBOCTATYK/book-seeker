@@ -47,20 +47,24 @@ class OffsetPointerRepository(AbstractRepository):
         return result
 
     def _get_by_key(self, sess: Session):
-        offset_search_statement = select(OffsetPointerDto).where(OffsetPointerDto.key == self._repository_name)
+        offset_search_statement = (select(OffsetPointerDto)
+                                   .where(OffsetPointerDto.key == self._repository_name)
+                                   .where(OffsetPointerDto.is_active == True)
+                                   )
         offset_db_result = sess.execute(offset_search_statement)
-        offset = offset_db_result.one_or_none()
+        offset = offset_db_result.scalar_one_or_none()
 
         if offset is None:
             self._insert_new_record(sess)
+            sess.flush()
             offset = 0
         else:
-            offset = offset[0].value
+            offset = offset.value
 
         return offset
 
     def _insert_new_record(self, sess: Session):
-        insert_statement = insert(OffsetPointerDto)\
+        insert_statement = insert(OffsetPointerDto) \
             .values({'key': self._repository_name, 'value': 0, 'is_active': True})
 
         return sess.execute(insert_statement)
