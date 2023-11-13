@@ -13,7 +13,7 @@ from datasource.DbLikeDataSource import DbLikeDataSource
 class FetchOptionsRepository(AbstractRepository):
     _filter_type_dictionary: FilterTypeDictionary = None
 
-    def __init__(self, filter_type_dictionary: FilterTypeDictionary, data_source: DbLikeDataSource):
+    def __init__(self, data_source: DbLikeDataSource, filter_type_dictionary: FilterTypeDictionary):
         super().__init__(data_source)
         self._filter_type_dictionary = filter_type_dictionary
 
@@ -38,18 +38,25 @@ class FetchOptionsRepository(AbstractRepository):
             'checkout': item['checkout'],
             'currency': item['currency'],
             'map_box': item['map_box'],
-            'persons': item['persons']
+            'is_active': True
         }
-        options_insert_statement = insert(FetchOptionsTable).values(value_to_insert).returning(FetchOptionsTable.id)
-        inserted_id = sess.execute(options_insert_statement)
+        options_insert_statement = (insert(FetchOptionsTable).values(value_to_insert)
+                                    .returning(FetchOptionsTable.id))
+        inserted_id = sess.execute(options_insert_statement).scalar_one_or_none()
 
-        for (key, value) in item['filters']:
-            filter_values_to_insert.append({
-                'value': value,
-                'type': self._filter_type_dictionary.select_by_id(key),
-                'fetch_options': inserted_id
-            })
+        filter_insert = []
 
-        filter_insert_statement_ids = insert(FilterOptionsTable).returning(FilterOptionsTable.id)
+        if item['filters'] is not None:
+            for (key, value) in item['filters'].items():
+                filter_values_to_insert.append({
+                    'value': value,
+                    'type': self._filter_type_dictionary.select_by_id(key),
+                    'fetch_options': inserted_id
+                })
 
-        return {'id': inserted_id, 'filters': filter_insert_statement_ids}
+            filter_insert_statement = (insert(FilterOptionsTable).values(filter_values_to_insert)
+                                       .returning(FilterOptionsTable.id))
+
+            filter_insert = sess.execute(filter_insert_statement).scalars().all()
+
+        return {'id': inserted_id, 'filters': filter_insert}
