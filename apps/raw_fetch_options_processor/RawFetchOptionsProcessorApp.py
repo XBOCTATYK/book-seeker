@@ -4,6 +4,8 @@ from apps.raw_fetch_options_processor.db_migrations.RawFetchOptionsProcessorAppM
 from apps.raw_fetch_options_processor.mappers.FetchOptionsDeserializer import FetchOptionsDeserializer
 from apps.raw_fetch_options_processor.repositories.RawFetchOptionsRepository import RawFetchOptionsRepository
 from apps.raw_fetch_options_processor.services.DataFromUrlDecoder import DataFromUrlDecoder
+from apps.scavenger.repositories.FetchOptionsRepository import FetchOptionsRepository
+from apps.scavenger.services.FilterTypeDictionary import FilterTypeDictionary
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
 from datasource.providers.PostgresDataProvider import PostgresDataProvider
@@ -13,6 +15,8 @@ class RawFetchOptionsProcessorApp(AbstractApp):
     _config = None
     _data_from_url_decoder: DataFromUrlDecoder
     _raw_fetch_dara_repository: RawFetchOptionsRepository
+    _fetch_options_repository: FetchOptionsRepository
+    _filter_type_dictionary: FilterTypeDictionary
     _fetch_options_deserializer: FetchOptionsDeserializer
     _data_source = None
     _analyser_offset_repository: OffsetPointerRepository = None
@@ -32,11 +36,15 @@ class RawFetchOptionsProcessorApp(AbstractApp):
             self._analyser_offset_repository_name
         )
         self._raw_fetch_dara_repository = RawFetchOptionsRepository(self._data_source, self._analyser_offset_repository)
+        self._filter_type_dictionary = FilterTypeDictionary(self._data_source)
+        self._fetch_options_repository = FetchOptionsRepository(self._data_source, self._filter_type_dictionary)
         self._fetch_options_deserializer = FetchOptionsDeserializer()
 
         self._raw_fetch_dara_repository.process_next_n_records(
             10,
-            lambda records: list(map(lambda rec: self._decode_data_to_dict(rec.url), records))
+            lambda records: self._fetch_options_repository.insert_values(
+                list(map(lambda rec: self._decode_data_to_dict(rec.url), records))
+            )
         )
 
     def _decode_data_to_dict(self, url: str) -> dict:

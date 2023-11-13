@@ -2,7 +2,7 @@ from apps.scavenger.models.constants.filter_types_enum import EFilterType
 
 
 def map_field(name: str, modifier=lambda x: x):
-    return lambda x: modifier(x[name]) if name in x else ''
+    return lambda x: modifier(x[name]) if name in x else None
 
 
 class FetchOptionsDeserializer:
@@ -26,7 +26,7 @@ class FetchOptionsDeserializer:
             'price',
             lambda x: x.split('-')[2] if x.split('-')[2] != 'max' else '99999'
         )
-        self._filter_mappers['review_score'] = map_field('review_score', lambda x: int(x) / 10)
+        self._filter_mappers['review_score'] = map_field('review_score', lambda x: str(int(x) / 10))
 
         result = {}
         for (name, mapper) in self._mappers.items():
@@ -40,7 +40,9 @@ class FetchOptionsDeserializer:
 
         result = {}
         for (key, filter_maper) in self._filter_mappers.items():
-            result.setdefault(key, filter_maper(filters_dict))
+            map_result = filter_maper(filters_dict)
+            if map_result is not None:
+                result.setdefault(key, map_result)
 
         return result
 

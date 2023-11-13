@@ -4,7 +4,7 @@ from typing import Type
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from common.model.db.DictionaryDto import DictionaryDto
+from common.model.db.BaseDto import BaseDto
 from datasource.DbLikeDataSource import DbLikeDataSource
 
 
@@ -12,7 +12,7 @@ class DbDictionary(ABC):
     _data_source: DbLikeDataSource
     _dict_items: dict
 
-    def __init__(self, data_source: DbLikeDataSource, entity: Type[DictionaryDto]):
+    def __init__(self, data_source: DbLikeDataSource, entity: Type[BaseDto]):
         self._data_source = data_source
         session: Session = self._data_source.open_session()
         db_result = session.execute(select(entity)).scalars().all()
