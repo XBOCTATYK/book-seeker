@@ -49,7 +49,7 @@ class FetchOptionsRepository(AbstractRepository):
         if item['filters'] is not None:
             for (key, value) in item['filters'].items():
                 filter_values_to_insert.append({
-                    'value': value,
+                    'value': value if value is not None else '1',
                     'type': self._filter_type_dictionary.select_by_id(key),
                     'fetch_options': inserted_id
                 })

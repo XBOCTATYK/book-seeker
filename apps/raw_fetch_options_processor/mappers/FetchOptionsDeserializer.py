@@ -26,6 +26,7 @@ class FetchOptionsDeserializer:
             'price',
             lambda x: x.split('-')[2] if x.split('-')[2] != 'max' else '99999'
         )
+        self._filter_mappers['currency'] = map_field('price', lambda x: x.split('-')[0])
         self._filter_mappers['review_score'] = map_field('review_score', lambda x: str(int(x) / 10))
 
         result = {}
@@ -41,7 +42,7 @@ class FetchOptionsDeserializer:
         result = {}
         for (key, filter_maper) in self._filter_mappers.items():
             map_result = filter_maper(filters_dict)
-            if map_result is not None:
+            if map_result is not None or (key in filters) is True:
                 result.setdefault(key, map_result)
 
         return result
