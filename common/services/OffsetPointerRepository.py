@@ -42,6 +42,9 @@ class OffsetPointerRepository(AbstractRepository):
 
         result = fn(low_border, top_border)
 
+        if isinstance(result, list):
+            top_border = low_border + len(result)
+
         self.update_value(top_border)
 
         return result
