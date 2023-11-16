@@ -1,4 +1,3 @@
-from functools import reduce
 from urllib.parse import unquote
 from deepmerge import always_merger
 

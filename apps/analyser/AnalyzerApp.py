@@ -52,14 +52,18 @@ class AnalyzerApp(AbstractApp):
         self._repository = RawDataRepository(self._data_source, self._analyser_offset_repository)
         clearing_dictionary = ClearingDictionary(self._data_source)
         self._processors.append(
-            PersistingProcessor(CleanDataRepository(self._data_source), PersistDataMapper(clearing_dictionary))
-        )
-        self._processors.append(
-            TopBestProcessor(SummarizeGoodsService(WeightDictionary(self._data_source), clearing_dictionary))
+            PersistingProcessor(
+                CleanDataRepository(self._data_source),
+                PersistDataMapper(clearing_dictionary)
+            )
         )
         self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
 
         result = self._repository.process_next_n(4, self._process_data)
+
+        top_best_processor = TopBestProcessor(
+            SummarizeGoodsService(WeightDictionary(self._data_source), clearing_dictionary)
+        )
         print(result)
 
     def stop(self):
