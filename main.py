@@ -33,9 +33,9 @@ if __name__ == '__main__':
 
     # ScavengerApp(config).start()
 
-    # AnalyzerApp(config).start()
+    AnalyzerApp(config).start()
 
-    RawFetchOptionsProcessorApp(config).start()
+    # RawFetchOptionsProcessorApp(config).start()
 
     # NotifierApp(config).start()
 

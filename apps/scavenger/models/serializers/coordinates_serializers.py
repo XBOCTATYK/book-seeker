@@ -3,7 +3,7 @@ from apps.scavenger.models.logic.MapViewBox import MapViewBox
 
 
 def coordinate_to_string(coordinate: Coordinate):
-    return f'{coordinate.lon},{coordinate.lat}'
+    return f'{coordinate.lat},{coordinate.lon}'
 
 
 def map_view_box_to_string(map_view_box: MapViewBox):
