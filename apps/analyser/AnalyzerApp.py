@@ -55,7 +55,7 @@ class AnalyzerApp(AbstractApp):
             PersistingProcessor(CleanDataRepository(self._data_source), PersistDataMapper(clearing_dictionary))
         )
         self._processors.append(
-            TopBestProcessor(SummarizeGoodsService(WeightDictionary(self._data_source)))
+            TopBestProcessor(SummarizeGoodsService(WeightDictionary(self._data_source), clearing_dictionary))
         )
         self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
 
@@ -70,9 +70,13 @@ class AnalyzerApp(AbstractApp):
 
     def _process_data(self, dto_list: List[RawOptionsDataDto]):
         decoded_dto_list: List[RawDataDecodedDto] = list(map(lambda dto: self._db_raw_data_mapper.convert(dto), dto_list))
-        selected_values: List[dict[str, str]] = list(map(lambda dto: self._clear_data_selector_service.select_to_dict(dto.data), decoded_dto_list))
+        selected_values: List[dict[str, str]] = list(map(
+            lambda dto: self._clear_data_selector_service.select_to_dict(dto.data),
+            decoded_dto_list
+        ))
 
-        return self._processor_runner.process(selected_values)
+        result = self._processor_runner.process(selected_values)
+        return result
 
     @staticmethod
     def migrations():

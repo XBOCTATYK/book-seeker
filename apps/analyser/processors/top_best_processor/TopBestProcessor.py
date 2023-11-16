@@ -13,4 +13,5 @@ class TopBestProcessor(AbstractProcessor):
     def process(self, values: List[dict]):
         scores = self._summarize_goods_service.summarize_all(values)
 
-        print(scores)
+        # TODO: insert to the database
+        return values

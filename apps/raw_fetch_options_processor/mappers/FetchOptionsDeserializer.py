@@ -7,6 +7,12 @@ def map_field(name: str, modifier=lambda x: x):
 
 class FetchOptionsDeserializer:
     _filter_mappers = dict(map(lambda val: (val, map_field(val)), EFilterType.values()))
+    _additional_filter_mappers = {
+        'min_price': map_field('price', lambda x: x.split('-')[1] if x.split('-')[1] != 'min' else '0'),
+        'max_price': map_field('price', lambda x: x.split('-')[2] if x.split('-')[2] != 'max' else '99999'),
+        'currency': map_field('price', lambda x: x.split('-')[0]),
+        'review_score': map_field('review_score', lambda x: str(int(x) / 10))
+    }
     _mappers = {
         'checkin': map_field('checkin'),
         'checkout': map_field('checkout'),
@@ -15,19 +21,10 @@ class FetchOptionsDeserializer:
     }
 
     def deserialize(self, values: dict) -> dict:
-        self._mappers.setdefault('filters', map_field('nflt', self._set_filters))
+        self._mappers['filters'] = map_field('nflt', self._set_filters)
         self._mappers['rooms'] = map_field('room1')
 
-        self._filter_mappers['min_price'] = map_field(
-            'price',
-            lambda x: x.split('-')[1] if x.split('-')[1] != 'min' else '0'
-        )
-        self._filter_mappers['max_price'] = map_field(
-            'price',
-            lambda x: x.split('-')[2] if x.split('-')[2] != 'max' else '99999'
-        )
-        self._filter_mappers['currency'] = map_field('price', lambda x: x.split('-')[0])
-        self._filter_mappers['review_score'] = map_field('review_score', lambda x: str(int(x) / 10))
+        self._filter_mappers += self._additional_filter_mappers
 
         result = {}
         for (name, mapper) in self._mappers.items():

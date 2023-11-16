@@ -13,7 +13,7 @@ class PersistingProcessor(AbstractProcessor):
         self._repository = repository
         self._mapper = mapper
 
-    def process(self, values: List[dict]):
+    def process(self, values: List[dict]) -> List[dict]:
         for item in values:
             values_to_insert = self._mapper.to_insert_list(item)
             self._repository.insert_clear_data(values_to_insert)
