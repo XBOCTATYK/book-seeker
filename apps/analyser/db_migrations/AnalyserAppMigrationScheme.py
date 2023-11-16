@@ -6,7 +6,6 @@ from apps.analyser.models.db.CleanDataDto import CleanDataDto
 from apps.analyser.models.db.CleanDataParamDto import CleanDataParamDto
 from apps.analyser.models.db.CleanDataParamsDictionaryDto import CleanDataParamsDictionaryDto
 from apps.analyser.models.db.ParamWeightDto import ParamWeightDto
-from apps.analyser.models.db.RawDataDecodedDto import RawDataDecodedDto
 from common.db_migrations.AbstractMigrationScheme import AbstractMigrationScheme
 from common.model.db.BaseDto import BaseDto
 

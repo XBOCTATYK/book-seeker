@@ -1,4 +1,3 @@
-from math import isnan
 from typing import List
 
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary

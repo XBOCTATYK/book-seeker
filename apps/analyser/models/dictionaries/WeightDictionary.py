@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 from apps.analyser.models.db.ParamWeightDto import ParamWeightDto
 from common.services.AbstractRepository import AbstractRepository
-from common.services.DbDictionary import DbDictionary
 from datasource.DbLikeDataSource import DbLikeDataSource
 
 
