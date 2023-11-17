@@ -32,7 +32,6 @@ class ScavengerApp(AbstractApp):
 
         self._config = config
         self._data_fetcher = BookDataFetcher(self._url_utils, FilterOptionsSerializer(), config['web'], config['book'], config['secret_headers'])
-        # self._data_fetcher = LocalFileDataFetcher()
 
     def start(self):
         print('Scavenger has started!')
