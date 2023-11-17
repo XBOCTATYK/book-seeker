@@ -10,7 +10,7 @@ from datasource.DbLikeDataSource import DbLikeDataSource
 class FilterCleanDataRepository(AbstractRepository):
     _offset_pointer_repository = None
 
-    def __init__(self, data_source: DbLikeDataSource, newoffset_pointer_repository: OffsetPointerRepository):
+    def __init__(self, data_source: DbLikeDataSource, offset_pointer_repository: OffsetPointerRepository):
         super().__init__(data_source)
 
         self._offset_pointer_repository = offset_pointer_repository
