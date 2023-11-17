@@ -1,7 +1,7 @@
 from typing import List
 
 from apps.AbstractApp import AbstractApp
-from apps.analyser.RecordDecoder import RecordDecoder
+from apps.analyser.mappers.RecordDecoder import RecordDecoder
 from apps.analyser.db_migrations.AnalyserAppMigrationScheme import AnalyserAppMigrationScheme
 from apps.analyser.mappers.RawDataDecodedDtoMapper import RawDataDecodedDtoMapper
 from apps.analyser.models.db.RawDataDecodedDto import RawDataDecodedDto
@@ -12,6 +12,7 @@ from apps.analyser.processors.persisting_processor.PersistDataMapper import Pers
 from apps.analyser.processors.persisting_processor.PersistingProcessor import PersistingProcessor
 from apps.analyser.processors.top_best_processor.TopBestProcessor import TopBestProcessor
 from apps.analyser.repositories.CleanDataRepository import CleanDataRepository
+from apps.analyser.repositories.FilteredCleanDataRepository import FilterCleanDataRepository
 from apps.analyser.services.ClearDataSelectorService import ClearDataSelectorService
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
 from apps.analyser.services.ProcessorRunner import ProcessorRunner
@@ -29,7 +30,8 @@ class AnalyzerApp(AbstractApp):
     _data_source: DbLikeDataSource = None
     _analyser_offset_repository: OffsetPointerRepository = None
     _analyser_offset_repository_name = 'analyzer'
-    _repository = None
+    _raw_data_repository = None
+    _filtered_clean_data_repository = None
     _db_raw_data_mapper: OneDirectionMapper = None
     _clear_data_selector_service: ClearDataSelectorService
     _processors: List[AbstractProcessor] = [
@@ -49,7 +51,7 @@ class AnalyzerApp(AbstractApp):
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config))
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source,
                                                                    self._analyser_offset_repository_name)
-        self._repository = RawDataRepository(self._data_source, self._analyser_offset_repository)
+        self._raw_data_repository = RawDataRepository(self._data_source, self._analyser_offset_repository)
         clearing_dictionary = ClearingDictionary(self._data_source)
         self._processors.append(
             PersistingProcessor(
@@ -59,10 +61,19 @@ class AnalyzerApp(AbstractApp):
         )
         self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
 
-        result = self._repository.process_next_n(4, self._process_data)
+        result = self._raw_data_repository.process_next_n(4, self._process_data)
+
+        self._filtered_clean_data_repository = FilterCleanDataRepository(
+            self._data_source,
+            OffsetPointerRepository(self._data_source, 'filtere_clean_data')
+        )
 
         top_best_processor = TopBestProcessor(
-            SummarizeGoodsService(WeightDictionary(self._data_source), clearing_dictionary)
+            SummarizeGoodsService(
+                WeightDictionary(self._data_source),
+                clearing_dictionary,
+
+            )
         )
         print(result)
 
