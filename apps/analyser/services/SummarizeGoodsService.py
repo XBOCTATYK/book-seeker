@@ -1,5 +1,7 @@
 from typing import List
 
+from apps.analyser.models.CleanDataEstimations import CleanDataEstimationResult
+from apps.analyser.models.db.CleanDataParamDto import CleanDataParamDto
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
 from apps.analyser.models.dictionaries.WeightDictionary import WeightDictionary
 from common.lib.safe_parse_to_float import safe_parse_to_float
@@ -13,13 +15,16 @@ class SummarizeGoodsService:
         self._weight_dict = weight_dict
         self._clean_data_params_dict = clean_data_params_dict
 
-    def summarize_all(self, values: List[dict]) -> List[int]:
-        return list(map(lambda item: self.summarize_item(item), values))
+    def summarize(self, item: dict) -> CleanDataEstimationResult:
+        return CleanDataEstimationResult(
+            estimate=self.summarize_item(item),
+            param_set=item
+        )
 
     def summarize_item(self, item: dict) -> int:
         result = 0
         for weight in self._weight_dict.values():
-            value = safe_parse_to_float(item[self._clean_data_params_dict.select_name(weight.param_name)])
+            value = safe_parse_to_float(item[weight.param_name]) if weight.param_name in item else 0
             result = result + value * weight.weight_value
 
         return result
