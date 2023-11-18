@@ -18,8 +18,10 @@ class AbstractRepository(ABC):
     def _eval(self, fn):
         session: Session = self._data_source.open_session()
         result = fn(session)
-        self._data_source.close_session()
 
+        session.expunge_all()
+        session.commit()
+        self._data_source.close_session()
         return result
 
     def _call_in_transaction(self, fn):

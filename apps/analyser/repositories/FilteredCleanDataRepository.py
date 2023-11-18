@@ -15,9 +15,6 @@ class FilterCleanDataRepository(AbstractRepository):
 
         self._offset_pointer_repository = offset_pointer_repository
 
-    def select_records(self):
-        pass
-
     def process_n_records(self, count: int, fn):
         return self._call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_in_window(
@@ -29,7 +26,7 @@ class FilterCleanDataRepository(AbstractRepository):
     def _process_n_records(self, sess: Session, bottom: int, top: int, fn):
         statement = (select(CleanDataDto).where(CleanDataDto.id >= bottom)
                      .where(CleanDataDto.id < top)
-                     .with_for_update(skip_locked=True))
+                     .with_for_update(skip_locked=True, key_share=True))
 
         clean_data_dtos = sess.execute(statement).scalars().all()
 
