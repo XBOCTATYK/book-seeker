@@ -1,3 +1,5 @@
+from apscheduler.schedulers.blocking import BlockingScheduler
+
 from apps.AbstractApp import AbstractApp
 from apps.raw_fetch_options_processor.db_migrations.RawFetchOptionsProcessorAppMigrationsScheme import \
     RawFetchOptionsProcessorAppMigrationsScheme
@@ -21,11 +23,13 @@ class RawFetchOptionsProcessorApp(AbstractApp):
     _data_source = None
     _analyser_offset_repository: OffsetPointerRepository = None
     _analyser_offset_repository_name = 'raw_fetch_options_app'
+    _scheduler = None
 
     def __init__(self, config: dict):
         super().__init__(config)
 
         self._config = config
+        self._scheduler = BlockingScheduler()
 
     def start(self):
         db_config = self._config['db']
@@ -39,7 +43,9 @@ class RawFetchOptionsProcessorApp(AbstractApp):
         self._filter_type_dictionary = FilterTypeDictionary(self._data_source)
         self._fetch_options_repository = FetchOptionsRepository(self._data_source, self._filter_type_dictionary)
         self._fetch_options_deserializer = FetchOptionsDeserializer()
+        self._job()
 
+    def _job(self):
         self._raw_fetch_dara_repository.process_next_n_records(
             10,
             lambda records: self._fetch_options_repository.insert_values(

@@ -2,6 +2,7 @@ import json
 import os
 
 from DateTime import DateTime
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 from apps.AbstractApp import AbstractApp
 from apps.scavenger.db_migrations.ScavengetAppMigrationsScheme import ScavengerAppMigrationsScheme
@@ -26,12 +27,20 @@ class ScavengerApp(AbstractApp):
     _fiter_fetcher: FilterFetcher = None
     _analyser_offset_repository: OffsetPointerRepository = None
     _analyser_offset_repository_name = 'scavenge_app'
+    _scheduler = None
 
     def __init__(self, config: dict):
         super().__init__(config)
 
         self._config = config
-        self._data_fetcher = BookDataFetcher(self._url_utils, FilterOptionsSerializer(), config['web'], config['book'], config['secret_headers'])
+        self._data_fetcher = BookDataFetcher(
+            self._url_utils,
+            FilterOptionsSerializer(),
+            config['web'],
+            config['book'],
+            config['secret_headers']
+        )
+        self._scheduler = BlockingScheduler()
 
     def start(self):
         print('Scavenger has started!')
@@ -40,18 +49,21 @@ class ScavengerApp(AbstractApp):
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source, self._analyser_offset_repository_name)
         self._repository = RawDataRepository(DbLikeDataSource(PostgresDataProvider(db_config)), self._analyser_offset_repository)
         self._fiter_fetcher = FilterFetcher(self._data_source)
-        options = self._fiter_fetcher.fetch()
-        print(options)
-        data = self._data_fetcher.fetch(options[0])
 
-        print(data)
+        self._job()
+        self._scheduler.add_job(self._job, 'interval', hours=12)
+
+    def _job(self):
+        options = self._fiter_fetcher.fetch()
+
+        data = self._data_fetcher.fetch(options[0])
 
         # writes possible hotels to repository
         items = list(map(lambda item: RawOptionsDataDto(
-                    raw_data=json.JSONEncoder().encode(item),
-                    writer=os.getlogin(),
-                    datetime=DateTime().ISO()
-                ), data['b_hotels']))
+            raw_data=json.JSONEncoder().encode(item),
+            writer=os.getlogin(),
+            datetime=DateTime().ISO()
+        ), data['b_hotels']))
 
         self._repository.save_all(items)
 
