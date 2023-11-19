@@ -1,5 +1,7 @@
 from typing import List
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from apps.AbstractApp import AbstractApp
 from apps.analyser.mappers.RecordDecoder import RecordDecoder
 from apps.analyser.db_migrations.AnalyserAppMigrationScheme import AnalyserAppMigrationScheme
@@ -36,10 +38,12 @@ class AnalyzerApp(AbstractApp):
     _filtered_data_repository = None
     _db_raw_data_mapper: OneDirectionMapper = None
     _clear_data_selector_service: ClearDataSelectorService
+    _top_best_service: TopBestPickService
     _processors: List[AbstractProcessor] = [
         FilteringProcessor()
     ]
     _processor_runner = None
+    _scheduler = None
 
     def __init__(self, config: dict):
         super().__init__(config)
@@ -47,6 +51,7 @@ class AnalyzerApp(AbstractApp):
         self._config = config
         self._db_raw_data_mapper = RawDataDecodedDtoMapper(RecordDecoder())
         self._processor_runner = ProcessorRunner(self._processors)
+        self._scheduler = BackgroundScheduler()
 
     def start(self):
         db_config = self._config['db']
@@ -62,8 +67,18 @@ class AnalyzerApp(AbstractApp):
             )
         )
         self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
+        self._top_best_service = TopBestPickService(
+            SummarizeGoodsService(
+                WeightDictionary(self._data_source),
+                clearing_dictionary,
+            ),
+            self._filtered_data_repository
+        )
 
-        # result = self._raw_data_repository.process_next_n(4, self._process_data)
+        self._job()
+
+    def _job(self):
+        self._raw_data_repository.process_next_n(4, self._process_data)
 
         self._filtered_clean_data_repository = FilterCleanDataRepository(
             self._data_source,
@@ -74,20 +89,10 @@ class AnalyzerApp(AbstractApp):
             OffsetPointerRepository(self._data_source, 'filtered_data')
         )
 
-        top_best_service = TopBestPickService(
-            SummarizeGoodsService(
-                WeightDictionary(self._data_source),
-                clearing_dictionary,
-            ),
-            self._filtered_data_repository
-        )
-
-        ren = self._filtered_clean_data_repository.process_n_records(
+        self._filtered_clean_data_repository.process_n_records(
             100,
-            lambda record_list: top_best_service.pick_and_save_top_options(record_list, 3)
+            lambda record_list: self._top_best_service.pick_and_save_top_options(record_list, 3)
         )
-
-        # print(result)
 
     def stop(self):
         self._data_source.close_session()
