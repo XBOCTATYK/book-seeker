@@ -1,7 +1,10 @@
 import json
 import os
+import time
 
 from DateTime import DateTime
+from apscheduler.executors.pool import ProcessPoolExecutor, ThreadPoolExecutor
+from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from apps.AbstractApp import AbstractApp
@@ -28,6 +31,7 @@ class ScavengerApp(AbstractApp):
     _analyser_offset_repository: OffsetPointerRepository = None
     _analyser_offset_repository_name = 'scavenge_app'
     _scheduler = None
+    _offset_reset_scheduler = None
 
     def __init__(self, config: dict):
         super().__init__(config)
@@ -40,7 +44,8 @@ class ScavengerApp(AbstractApp):
             config['book'],
             config['secret_headers']
         )
-        self._scheduler = BlockingScheduler()
+        self._scheduler = BackgroundScheduler()
+        self._offset_reset_scheduler = BackgroundScheduler()
 
     def start(self):
         print('Scavenger has started!')
@@ -48,15 +53,15 @@ class ScavengerApp(AbstractApp):
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config))
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source, self._analyser_offset_repository_name)
         self._repository = RawDataRepository(DbLikeDataSource(PostgresDataProvider(db_config)), self._analyser_offset_repository)
-        self._fiter_fetcher = FilterFetcher(self._data_source)
+        self._fiter_fetcher = FilterFetcher(self._data_source, self._analyser_offset_repository)
 
         self._job()
-        self._scheduler.add_job(self._job, 'interval', hours=12)
+        self._run_schedulers()
 
     def _job(self):
         options = self._fiter_fetcher.fetch()
 
-        data = self._data_fetcher.fetch(options[0])
+        data = self._data_fetcher.fetch(options)
 
         # writes possible hotels to repository
         items = list(map(lambda item: RawOptionsDataDto(
@@ -66,6 +71,22 @@ class ScavengerApp(AbstractApp):
         ), data['b_hotels']))
 
         self._repository.save_all(items)
+
+    def _scavenger_reset(self):
+        self._analyser_offset_repository.update_value('0')
+
+    def _run_schedulers(self):
+        self._scheduler.add_job(self._job, 'interval', minutes=2)
+        self._offset_reset_scheduler.add_job(self._scavenger_reset, 'interval', hours=24)
+        self._scheduler.start()
+        self._offset_reset_scheduler.start()
+
+        try:
+            while True:
+                time.sleep(2)
+        except (KeyboardInterrupt, SystemExit):
+            self._scheduler.shutdown()
+            self._offset_reset_scheduler.shutdown()
 
     def stop(self):
         self._data_source.close_session()
