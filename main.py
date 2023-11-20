@@ -31,9 +31,9 @@ if __name__ == '__main__':
 
     print(config_service.config())
 
-    # ScavengerApp(config).start()
+    ScavengerApp(config).start()
 
-    AnalyzerApp(config).start()
+    # AnalyzerApp(config).start()
 
     # RawFetchOptionsProcessorApp(config).start()
 
