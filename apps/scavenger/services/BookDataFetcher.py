@@ -34,9 +34,6 @@ class BookDataFetcher(DataFetcher):
         url = unquote(self._create_url(fetch_options))
         headers = self._get_headers()
 
-        print(url)
-
-        # raise Exception('uuu')
         self._last_result = urllib3.request(
             url=url,
             method='GET',
@@ -48,7 +45,7 @@ class BookDataFetcher(DataFetcher):
 
         return self._last_result.json()
 
-    def _create_url(self, fetch_options: FetchOptions):
+    def _create_url(self, fetch_options: FetchOptions) -> str:
         query_params = self._get_query_params(fetch_options)
 
         return self._url_utils.create_url(
@@ -76,7 +73,7 @@ class BookDataFetcher(DataFetcher):
             'ltfd_excl': f';BBOX={map_view_box_to_string(fetch_options["map_box"])}',
         }
 
-    def _get_headers(self) -> dict:
+    def _get_headers(self) -> dict[str, str]:
         return always_merger.merge({
             'content-typ': 'application/json; utf-8',
             'authority': self._book_config['authority'],

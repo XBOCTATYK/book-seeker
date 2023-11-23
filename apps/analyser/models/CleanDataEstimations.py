@@ -1,6 +1,4 @@
-from typing import TypedDict, List
-
-from apps.analyser.models.db.CleanDataParamDto import CleanDataParamDto
+from typing import TypedDict
 
 
 class CleanDataEstimationResult(TypedDict):

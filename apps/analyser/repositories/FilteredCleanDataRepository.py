@@ -16,7 +16,7 @@ class FilterCleanDataRepository(AbstractRepository):
         self._offset_pointer_repository = offset_pointer_repository
 
     def process_n_records(self, count: int, fn):
-        return self._call_in_transaction(
+        return self.call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_in_window(
                 count,
                 lambda bottom, top: self._process_n_records(sess, bottom, top, fn)

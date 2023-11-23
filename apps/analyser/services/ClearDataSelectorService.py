@@ -8,7 +8,7 @@ class ClearDataSelectorService:
     def __init__(self, dictionary: DbDictionary):
         self._dictionary = dictionary
 
-    def select_to_dict(self, data: dict) -> dict[str, str]:
+    def select_to_dict(self, data: dict[str, any]) -> dict[str, any]:
         selectors = self._dictionary.values()
         output_dict = {}
 

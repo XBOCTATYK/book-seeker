@@ -1,4 +1,4 @@
-from typing import Optional, List, TypeVar, Callable
+from typing import Optional, TypeVar, Callable
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -19,20 +19,20 @@ class RawDataRepository(AbstractRepository):
         self._offset_pointer_repository = offset_pointer_repository
 
     def save(self, raw_options_data_dto: RawOptionsDataDto) -> int:
-        return self._call_in_transaction(lambda sess: sess.add(raw_options_data_dto))
+        return self.call_in_transaction(lambda sess: sess.add(raw_options_data_dto))
 
-    def save_all(self, list_dto: List[RawOptionsDataDto]):
-        return self._call_in_transaction(lambda sess: self._save_all(sess, list_dto))
+    def save_all(self, list_dto: list[RawOptionsDataDto]):
+        self.call_in_transaction(lambda sess: self._save_all(sess, list_dto))
 
     def find_next(self) -> Optional[RawOptionsDataDto]:
-        return self._call_in_transaction(
+        return self.call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_at_offset(
                 lambda offset: self._find_next(sess, offset)
             )
         )
 
-    def find_next_n(self, count: int) -> List[RawOptionsDataDto]:
-        return self._call_in_transaction(
+    def find_next_n(self, count: int) -> list[RawOptionsDataDto]:
+        return self.call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_in_window(
                 count,
                 lambda low, top: self._find_next_n(sess, low, top)
@@ -40,21 +40,21 @@ class RawDataRepository(AbstractRepository):
         )
 
     def process_next(self, fn: Callable[[RawOptionsDataDto], T]) -> T:
-        return self._call_in_transaction(
+        return self.call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_at_offset(
                 lambda offset: self._process_next(sess, offset, fn)
             )
         )
 
-    def process_next_n(self, count: int, fn: Callable[[List[RawOptionsDataDto]], T]) -> T:
-        return self._call_in_transaction(
+    def process_next_n(self, count: int, fn: Callable[[list[RawOptionsDataDto]], T]) -> T:
+        return self.call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_in_window(
                 count,
                 lambda low, top: self._process_next_n(sess, low, top, fn)
             )
         )
 
-    def _save_all(self, sess: Session, list_dto: List[RawOptionsDataDto]):
+    def _save_all(self, sess: Session, list_dto: list[RawOptionsDataDto]):
         sess.add_all(list_dto)
         sess.flush(list_dto)
 
@@ -65,7 +65,7 @@ class RawDataRepository(AbstractRepository):
         raw_data_db_result = sess.execute(search_statement)
         return raw_data_db_result.scalar_one_or_none()
 
-    def _find_next_n(self, sess: Session, low: int, top: int) -> List[RawOptionsDataDto]:
+    def _find_next_n(self, sess: Session, low: int, top: int) -> list[RawOptionsDataDto]:
         search_statement = select(RawOptionsDataDto).where(RawOptionsDataDto.id >= low) \
             .where(RawOptionsDataDto.id < top).with_for_update(skip_locked=True)
         raw_data_db_result = sess.execute(search_statement)
@@ -77,7 +77,7 @@ class RawDataRepository(AbstractRepository):
 
         return result
 
-    def _process_next_n(self, sess: Session, low: int, top: int, fn: Callable[[List[RawOptionsDataDto]], T]) -> T:
+    def _process_next_n(self, sess: Session, low: int, top: int, fn: Callable[[list[RawOptionsDataDto]], T]) -> T:
         raw_data_dto_list = self._find_next_n(sess, low, top)
 
         fn(raw_data_dto_list)

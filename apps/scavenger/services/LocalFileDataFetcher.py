@@ -11,6 +11,6 @@ class LocalFileDataFetcher(DataFetcher):
     _reader: Reader = FileTextReader('./test-example')
     _decoder: JSONDecoder = json.JSONDecoder()
 
-    def fetch(self, fetch_options: FetchOptions) -> dict:
+    def fetch(self, fetch_options: FetchOptions) -> dict[str, any]:
         text = self._reader.read('json-example.json')
         return self._decoder.decode(text)

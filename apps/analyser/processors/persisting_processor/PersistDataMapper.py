@@ -1,3 +1,4 @@
+from apps.analyser.models.types.ClearDataInsertItem import ClearDataInsertItem
 from common.services.DbDictionary import DbDictionary
 
 
@@ -7,7 +8,7 @@ class PersistDataMapper:
     def __init__(self, dictionary: DbDictionary):
         self._dictionary = dictionary
 
-    def to_insert_list(self, data: dict) -> list:
+    def to_insert_list(self, data: dict) -> list[ClearDataInsertItem]:
         selectors = self._dictionary.values()
         values = []
 

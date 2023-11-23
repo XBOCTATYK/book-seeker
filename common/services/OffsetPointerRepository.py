@@ -22,10 +22,10 @@ class OffsetPointerRepository(AbstractRepository):
         self._repository_name = repo_name
 
     def get_offset(self):
-        return self._call_in_transaction(self._get_by_key)
+        return self.call_in_transaction(self._get_by_key)
 
-    def update_value(self, value: str):
-        return self._call_in_transaction(lambda sess: self._save(sess, value))
+    def update_value(self, value: int):
+        self.call_in_transaction(lambda sess: self._save(sess, value))
 
     def call_at_offset(self, fn: Callable[[int], T]):
         offset = self.get_offset()
@@ -36,7 +36,7 @@ class OffsetPointerRepository(AbstractRepository):
 
         return result
 
-    def call_in_window(self, count: int, fn: Callable[[int, int], T]):
+    def call_in_window(self, count: int, fn: Callable[[int, int], T]) -> T:
         low_border = self.get_offset()
         top_border = low_border + count
 
@@ -49,10 +49,11 @@ class OffsetPointerRepository(AbstractRepository):
 
         return result
 
-    def _get_by_key(self, sess: Session):
+    def _get_by_key(self, sess: Session) -> int:
         offset_search_statement = (select(OffsetPointerDto)
                                    .where(OffsetPointerDto.key == self._repository_name)
                                    .where(OffsetPointerDto.is_active == True)
+                                   .with_for_update(key_share=True)
                                    )
         offset_db_result = sess.execute(offset_search_statement)
         offset = offset_db_result.scalar_one_or_none()
@@ -70,9 +71,9 @@ class OffsetPointerRepository(AbstractRepository):
         insert_statement = insert(OffsetPointerDto) \
             .values({'key': self._repository_name, 'value': 0, 'is_active': True})
 
-        return sess.execute(insert_statement)
+        sess.execute(insert_statement)
 
-    def _save(self, sess: Session, value: str):
+    def _save(self, sess: Session, value: int):
         offset_statement = update(OffsetPointerDto) \
             .where(OffsetPointerDto.key == self._repository_name)
 
