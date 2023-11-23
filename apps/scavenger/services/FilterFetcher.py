@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 
-from sqlalchemy import select, Row
+from sqlalchemy import select
+from sqlalchemy.sql.functions import min
 from sqlalchemy.orm import Session
 
 from apps.scavenger.models.db.FetchOptionsTable import FetchOptionsTable
@@ -21,24 +22,34 @@ class FilterFetcher(AbstractRepository):
         self._data_source = data_source
         self._offset_pointer_repository = offset_pointer_repository
 
-    def fetch(self):
-        return self._call_in_transaction(
+    def fetch(self) -> Optional[FetchOptions]:
+        return self.call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_at_offset(
                 lambda offset: self._fetch(sess, offset)
             )
         )
 
-    def _fetch(self, sess: Session, offset: int):
+    def find_first(self) -> int:
+        return self.eval(
+            lambda sess: self._find_first(sess)
+        )
+
+    def _fetch(self, sess: Session, offset: int) -> Optional[FetchOptions]:
         statement = (select(FetchOptionsTable)
-                     .where(FetchOptionsTable.is_active)
                      .where(FetchOptionsTable.id == offset))
         res: FetchOptionsTable = sess.execute(statement).unique().scalar_one_or_none()
 
-        if res is None:
+        if res is None or res.is_active is False:
             return None
 
         fetch_options = self._process(res)
         return fetch_options
 
-    def _process(self, result: FetchOptionsTable) -> List[FetchOptions]:
+    def _process(self, result: FetchOptionsTable) -> FetchOptions:
         return FetchOptionsMapper(FilterTypeDictionary(self._data_source)).from_entity(result)
+
+    def _find_first(self, sess: Session) -> int:
+        statement = min(FetchOptionsTable.id)
+        res: int = sess.execute(statement).scalar_one_or_none()
+
+        return res

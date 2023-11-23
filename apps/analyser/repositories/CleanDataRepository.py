@@ -3,18 +3,20 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
+from apps.analyser.models.ECleanDataStatus import ECleanDataStatus
 from apps.analyser.models.db.CleanDataDto import CleanDataDto
 from apps.analyser.models.db.CleanDataParamDto import CleanDataParamDto
+from apps.analyser.models.types.ClearDataInsertItem import ClearDataInsertItem
 from common.services.AbstractRepository import AbstractRepository
 
 
 class CleanDataRepository(AbstractRepository):
-    def insert_clear_data(self, values: list):
-        return self._call_in_transaction(lambda sess: self._insert_clear_data(sess, values))
+    def insert_clear_data(self, values: list[ClearDataInsertItem]) -> CleanDataDto:
+        return self.call_in_transaction(lambda sess: self._insert_clear_data(sess, values))
 
-    def _insert_clear_data(self, sess: Session, values: list):
+    def _insert_clear_data(self, sess: Session, values: list[ClearDataInsertItem]) -> CleanDataDto:
         insert_clear_data_statements = insert(CleanDataDto)\
-            .values({'status': 'NEW', 'created_at': DateTime().ISO(), 'updated_at': DateTime().ISO()})\
+            .values({'status': ECleanDataStatus.NEW.value, 'created_at': DateTime().ISO(), 'updated_at': DateTime().ISO()})\
             .returning(CleanDataDto.id)
         param_set = sess.execute(insert_clear_data_statements).scalar_one_or_none()
 
@@ -23,12 +25,12 @@ class CleanDataRepository(AbstractRepository):
         sess.execute(insert_values_statements)
 
         req = select(CleanDataDto).where(CleanDataDto.id == param_set)
-        rest = sess.execute(req).unique().scalar_one_or_none()
+        rest: CleanDataDto = sess.execute(req).unique().scalar_one_or_none()
 
         return rest
 
-    def get_all(self):
+    def get_all(self) -> list[CleanDataDto]:
         session = self._get_current_session()
         statement = select(CleanDataDto)
-        return session.execute(statement).unique().fetchall()
+        return list(session.execute(statement).unique().scalars().all())
 

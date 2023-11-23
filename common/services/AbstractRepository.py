@@ -1,8 +1,11 @@
 from abc import ABC
+from typing import TypeVar, Callable
 
 from sqlalchemy.orm import Session
 
 from datasource.DbLikeDataSource import DbLikeDataSource
+
+T = TypeVar('T')
 
 
 class AbstractRepository(ABC):
@@ -12,10 +15,10 @@ class AbstractRepository(ABC):
     def __init__(self, data_source: DbLikeDataSource):
         self._data_source = data_source
 
-    def _get_current_session(self):
+    def _get_current_session(self) -> Session:
         return self._data_source.open_session()
 
-    def _eval(self, fn):
+    def eval(self, fn: Callable[[Session], T]) -> T:
         session: Session = self._data_source.open_session()
         result = fn(session)
 
@@ -24,7 +27,7 @@ class AbstractRepository(ABC):
         self._data_source.close_session()
         return result
 
-    def _call_in_transaction(self, fn):
+    def call_in_transaction(self, fn: Callable[[Session], T]) -> T:
         session: Session = self._data_source.open_session()
         is_transaction_started_earlier = session.in_transaction()
 

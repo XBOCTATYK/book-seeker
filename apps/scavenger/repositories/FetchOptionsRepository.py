@@ -22,7 +22,7 @@ class FetchOptionsRepository(AbstractRepository):
 
         for item in values:
             result_set.append(
-                self._call_in_transaction(
+                self.call_in_transaction(
                     lambda sess: self._insert_values(sess, item)
                 )
             )

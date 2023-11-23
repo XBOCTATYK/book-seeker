@@ -56,10 +56,14 @@ class ScavengerApp(AbstractApp):
         self._fiter_fetcher = FilterFetcher(self._data_source, self._analyser_offset_repository)
 
         self._job()
-        self._run_schedulers()
+        # self._scavenger_reset()
+        # self._run_schedulers()
 
     def _job(self):
         options = self._fiter_fetcher.fetch()
+
+        if options is None:
+            return
 
         data = self._data_fetcher.fetch(options)
 
@@ -73,7 +77,8 @@ class ScavengerApp(AbstractApp):
         self._repository.save_all(items)
 
     def _scavenger_reset(self):
-        self._analyser_offset_repository.update_value('0')
+        min_value = self._fiter_fetcher.find_first()
+        self._analyser_offset_repository.update_value(min_value)
 
     def _run_schedulers(self):
         self._scheduler.add_job(self._job, 'interval', minutes=2)
