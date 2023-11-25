@@ -1,5 +1,3 @@
-from typing import List
-
 from apps.AbstractApp import AbstractApp
 from apps.transit_data_app.db_migrations.TransitDataAppMigrationScheme import TransitDataAppMigrationScheme
 from apps.transit_data_app.repositories.FilteredDataRepository import FilteredDataRepository
@@ -10,6 +8,7 @@ from datasource.providers.PostgresDataProvider import PostgresDataProvider
 
 class TransitDataApp(AbstractApp):
     _data_source: DbLikeDataSource = None
+
     _transit_data_offset_repository: OffsetPointerRepository = None
     _filtered_data_repository: FilteredDataRepository = None
 
@@ -25,6 +24,9 @@ class TransitDataApp(AbstractApp):
     def start(self):
         self._filtered_data_repository.process_next_n(10, self._process)
 
+    def stop(self):
+        pass
+
     def exports(self) -> dict[str, any]:
         return {
             'filtered_data_repository': self._filtered_data_repository
@@ -36,5 +38,3 @@ class TransitDataApp(AbstractApp):
     @staticmethod
     def migrations():
         return TransitDataAppMigrationScheme
-
-
