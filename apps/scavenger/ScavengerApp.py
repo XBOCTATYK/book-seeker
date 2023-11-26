@@ -55,7 +55,6 @@ class ScavengerApp(AbstractApp):
         self._repository = RawDataRepository(DbLikeDataSource(PostgresDataProvider(db_config)), self._analyser_offset_repository)
         self._fiter_fetcher = FilterFetcher(self._data_source, self._analyser_offset_repository)
 
-        self._scavenger_reset()
         self._run_schedulers()
 
     def _job(self):

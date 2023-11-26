@@ -41,7 +41,7 @@ class BookDataFetcher(DataFetcher):
             decode_content=True
         )
 
-        print(self._last_result.status)
+        print(f'Request status {self._last_result.status}')
 
         return self._last_result.json()
 
@@ -58,7 +58,7 @@ class BookDataFetcher(DataFetcher):
         return {
             'dest_type': 'city',
             'ref': 'searchresults',
-            'limit': 2,
+            'limit': 50,
             'lang': 'en-gb',
             'checkin': serialize_date_time(fetch_options['checkin']),
             'checkout': serialize_date_time(fetch_options['checkout']),
