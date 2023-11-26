@@ -55,9 +55,8 @@ class ScavengerApp(AbstractApp):
         self._repository = RawDataRepository(DbLikeDataSource(PostgresDataProvider(db_config)), self._analyser_offset_repository)
         self._fiter_fetcher = FilterFetcher(self._data_source, self._analyser_offset_repository)
 
-        self._job()
-        # self._scavenger_reset()
-        # self._run_schedulers()
+        self._scavenger_reset()
+        self._run_schedulers()
 
     def _job(self):
         options = self._fiter_fetcher.fetch()
@@ -81,7 +80,7 @@ class ScavengerApp(AbstractApp):
         self._analyser_offset_repository.update_value(min_value)
 
     def _run_schedulers(self):
-        self._scheduler.add_job(self._job, 'interval', minutes=2)
+        self._scheduler.add_job(self._job, 'interval', minutes=1)
         self._offset_reset_scheduler.add_job(self._scavenger_reset, 'interval', hours=24)
         self._scheduler.start()
         self._offset_reset_scheduler.start()

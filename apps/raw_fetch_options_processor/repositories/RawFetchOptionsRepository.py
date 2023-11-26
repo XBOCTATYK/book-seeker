@@ -28,6 +28,7 @@ class RawFetchOptionsRepository(AbstractRepository):
 
     def _process_next_n_records(self, sess: Session, low: int, top: int, fn: Callable[[List[RawFetchOptions]], T]) -> T:
         record_list = self._find_next_n_records(sess, low, top)
+        print(f'Found {len(record_list)} raw fetch options!')
         return fn(record_list)
 
     def _find_next_n_records(self, sess: Session, low: int, top: int) -> List[RawFetchOptions]:

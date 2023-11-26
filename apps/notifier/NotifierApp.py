@@ -51,6 +51,20 @@ class NotifierApp(AbstractApp):
         )
         self._tg_users_notifier = TgUsersNotifier(self._tg_user_to_fetch_options_repository)
 
+        self._run_telegram_app(bot_config)
+
+        self._scheduler = BackgroundScheduler()
+
+    def _job(self):
+        print('Scheduler is running!')
+        bot: Bot = self._telegram_application.bot
+
+        self._filtered_data_repository.process_next_n(
+            10,
+            lambda chat_id, message: self._tg_users_notifier.notify(bot)
+        )
+
+    def _run_telegram_app(self, bot_config: dict):
         self._telegram_application = ApplicationBuilder().token(bot_config['token']).build()
 
         for telegram_handler in self._handlers:
@@ -63,16 +77,7 @@ class NotifierApp(AbstractApp):
             self._telegram_application.add_handler(command_handler)
 
         self._telegram_application.run_polling(poll_interval=2000)
-
-        self._scheduler = BackgroundScheduler()
-
-    def _job(self):
-        bot: Bot = self._telegram_application.bot
-
-        self._filtered_data_repository.process_next_n(
-            10,
-            lambda chat_id, message: self._tg_users_notifier.notify(bot)
-        )
+        print('Telegram bot is running')
 
     def _run_schedulers(self):
         self._scheduler.add_job(self._job)

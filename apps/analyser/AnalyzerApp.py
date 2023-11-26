@@ -1,6 +1,7 @@
 from typing import List
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 from apps.AbstractApp import AbstractApp
 from apps.analyser.mappers.RecordDecoder import RecordDecoder
@@ -51,7 +52,7 @@ class AnalyzerApp(AbstractApp):
         self._config = config
         self._db_raw_data_mapper = RawDataDecodedDtoMapper(RecordDecoder())
         self._processor_runner = ProcessorRunner(self._processors)
-        self._scheduler = BackgroundScheduler()
+        self._scheduler = BlockingScheduler()
 
     def start(self):
         db_config = self._config['db']
@@ -66,6 +67,14 @@ class AnalyzerApp(AbstractApp):
                 PersistDataMapper(clearing_dictionary)
             )
         )
+        self._filtered_clean_data_repository = FilterCleanDataRepository(
+            self._data_source,
+            OffsetPointerRepository(self._data_source, 'filter_clean_data')
+        )
+        self._filtered_data_repository = FilteredDataRepository(
+            self._data_source,
+            OffsetPointerRepository(self._data_source, 'filtered_data')
+        )
         self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
         self._top_best_service = TopBestPickService(
             SummarizeGoodsService(
@@ -75,27 +84,25 @@ class AnalyzerApp(AbstractApp):
             self._filtered_data_repository
         )
 
-        self._job()
+        self._run_schedulers()
+
+    def stop(self):
+        self._data_source.close_session()
+        self._scheduler.shutdown()
 
     def _job(self):
-        self._raw_data_repository.process_next_n(4, self._process_data)
+        print('Cleaning raw data!')
+        self._raw_data_repository.process_next_n(100, self._process_data)
 
-        self._filtered_clean_data_repository = FilterCleanDataRepository(
-            self._data_source,
-            OffsetPointerRepository(self._data_source, 'filter_clean_data')
-        )
-        self._filtered_data_repository = FilteredDataRepository(
-            self._data_source,
-            OffsetPointerRepository(self._data_source, 'filtered_data')
-        )
-
+        print('Filtering data')
         self._filtered_clean_data_repository.process_n_records(
             100,
             lambda record_list: self._top_best_service.pick_and_save_top_options(record_list, 3)
         )
 
-    def stop(self):
-        self._data_source.close_session()
+    def _run_schedulers(self):
+        self._scheduler.add_job(self._job, 'interval', seconds=5)
+        self._scheduler.start()
 
     def exports(self) -> dict:
         return {}

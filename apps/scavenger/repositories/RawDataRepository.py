@@ -80,6 +80,7 @@ class RawDataRepository(AbstractRepository):
     def _process_next_n(self, sess: Session, low: int, top: int, fn: Callable[[list[RawOptionsDataDto]], T]) -> T:
         raw_data_dto_list = self._find_next_n(sess, low, top)
 
+        print(f'Found {len(raw_data_dto_list)} raw records!')
         fn(raw_data_dto_list)
 
         return raw_data_dto_list

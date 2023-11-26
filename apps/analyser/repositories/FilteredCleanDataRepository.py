@@ -30,4 +30,5 @@ class FilterCleanDataRepository(AbstractRepository):
 
         clean_data_dtos = sess.execute(statement).scalars().all()
 
+        print(f'Found {len(clean_data_dtos)} records to filter')
         return fn(clean_data_dtos)
