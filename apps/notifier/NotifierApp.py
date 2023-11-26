@@ -5,6 +5,7 @@ from telegram import Bot
 from telegram.ext import ApplicationBuilder, CommandHandler, Application
 
 from apps.AbstractApp import AbstractApp
+from apps.notifier.db_migrations.NotifierMigrationScheme import NotifierMigrationScheme
 from apps.notifier.handlers.TelegramHandler import TelegramHandler
 from apps.notifier.handlers.StartHandlers import StartHandler
 from apps.notifier.repositories.TgUserToFetchOptionsRepository import TgUserToFetchOptionsRepository
@@ -12,6 +13,7 @@ from apps.notifier.services.TgUsersNotifier import TgUsersNotifier
 from apps.transit_data_app.repositories.FilteredDataRepository import FilteredDataRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
+from datasource.providers.PostgresDataProvider import PostgresDataProvider
 
 
 class NotifierApp(AbstractApp):
@@ -38,7 +40,7 @@ class NotifierApp(AbstractApp):
         db_config = self._config['db']
         bot_config = self._config['bot']
 
-        self._data_source = DbLikeDataSource(db_config, 'notifier_app_data_source')
+        self._data_source = DbLikeDataSource(PostgresDataProvider(db_config), 'notifier_app_data_source')
         self._offset_pointer_notifier = OffsetPointerRepository(self._data_source, self._offset_pointer_notifier_name)
         self._filtered_data_repository = FilteredDataRepository(self._data_source, self._offset_pointer_notifier)
         self._tg_user_to_fetch_offset_pointer = OffsetPointerRepository(
@@ -80,11 +82,15 @@ class NotifierApp(AbstractApp):
         print('Telegram bot is running')
 
     def _run_schedulers(self):
-        self._scheduler.add_job(self._job)
+        self._scheduler.add_job(self._job, 'interval', seconds=10)
         self._scheduler.start()
 
     def stop(self):
-        pass
+        self._scheduler.shutdown()
 
     def exports(self) -> dict:
         pass
+
+    @staticmethod
+    def migrations():
+        return NotifierMigrationScheme
