@@ -39,12 +39,14 @@ class OffsetPointerRepository(AbstractRepository):
     def call_in_window(self, count: int, fn: Callable[[int, int], T]) -> T:
         low_border = self.get_offset()
         top_border = low_border + count
+        print(f'{self._repository_name}: trying to process items {low_border}-{top_border}')
 
         result = fn(low_border, top_border)
 
         if isinstance(result, list):
             top_border = low_border + len(result)
 
+        print(f'{self._repository_name}: offset will be advance till {top_border}')
         self.update_value(top_border)
 
         return result

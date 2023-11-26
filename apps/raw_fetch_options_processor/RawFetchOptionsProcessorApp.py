@@ -16,7 +16,7 @@ from datasource.providers.PostgresDataProvider import PostgresDataProvider
 class RawFetchOptionsProcessorApp(AbstractApp):
     _config = None
     _data_from_url_decoder: DataFromUrlDecoder
-    _raw_fetch_dara_repository: RawFetchOptionsRepository
+    _raw_fetch_data_repository: RawFetchOptionsRepository
     _fetch_options_repository: FetchOptionsRepository
     _filter_type_dictionary: FilterTypeDictionary
     _fetch_options_deserializer: FetchOptionsDeserializer
@@ -39,14 +39,16 @@ class RawFetchOptionsProcessorApp(AbstractApp):
             self._data_source,
             self._analyser_offset_repository_name
         )
-        self._raw_fetch_dara_repository = RawFetchOptionsRepository(self._data_source, self._analyser_offset_repository)
+        self._raw_fetch_data_repository = RawFetchOptionsRepository(self._data_source, self._analyser_offset_repository)
         self._filter_type_dictionary = FilterTypeDictionary(self._data_source)
         self._fetch_options_repository = FetchOptionsRepository(self._data_source, self._filter_type_dictionary)
         self._fetch_options_deserializer = FetchOptionsDeserializer()
-        self._job()
+
+        self._run_scheduler()
 
     def _job(self):
-        self._raw_fetch_dara_repository.process_next_n_records(
+        print('Processing raw fetch data')
+        self._raw_fetch_data_repository.process_next_n_records(
             10,
             lambda records: self._fetch_options_repository.insert_values(
                 list(map(lambda rec: self._decode_data_to_dict(rec.url), records))
@@ -56,6 +58,10 @@ class RawFetchOptionsProcessorApp(AbstractApp):
     def _decode_data_to_dict(self, url: str) -> dict:
         decoded = self._data_from_url_decoder.decode(url)
         return self._fetch_options_deserializer.deserialize(decoded)
+
+    def _run_scheduler(self):
+        self._scheduler.add_job(self._job, 'interval', seconds=1)
+        self._scheduler.start()
 
     def stop(self):
         pass
