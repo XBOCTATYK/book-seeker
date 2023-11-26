@@ -13,6 +13,7 @@ migration_dictionaries = {
         'b_availability.b_price_breakdown.b_prediscounted_price.0.b_copy_alt',
         'b_url',
         'b_iw_template',
-        'b_matching_units_common_configuration.localized_area.area'
+        'b_matching_units_common_configuration.localized_area.area',
+        'b_id'
     ]
 }
