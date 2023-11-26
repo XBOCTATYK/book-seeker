@@ -67,6 +67,14 @@ class AnalyzerApp(AbstractApp):
                 PersistDataMapper(clearing_dictionary)
             )
         )
+        self._filtered_clean_data_repository = FilterCleanDataRepository(
+            self._data_source,
+            OffsetPointerRepository(self._data_source, 'filter_clean_data')
+        )
+        self._filtered_data_repository = FilteredDataRepository(
+            self._data_source,
+            OffsetPointerRepository(self._data_source, 'filtered_data')
+        )
         self._clear_data_selector_service = ClearDataSelectorService(clearing_dictionary)
         self._top_best_service = TopBestPickService(
             SummarizeGoodsService(
@@ -85,15 +93,6 @@ class AnalyzerApp(AbstractApp):
     def _job(self):
         print('Cleaning raw data!')
         self._raw_data_repository.process_next_n(100, self._process_data)
-
-        self._filtered_clean_data_repository = FilterCleanDataRepository(
-            self._data_source,
-            OffsetPointerRepository(self._data_source, 'filter_clean_data')
-        )
-        self._filtered_data_repository = FilteredDataRepository(
-            self._data_source,
-            OffsetPointerRepository(self._data_source, 'filtered_data')
-        )
 
         print('Filtering data')
         self._filtered_clean_data_repository.process_n_records(

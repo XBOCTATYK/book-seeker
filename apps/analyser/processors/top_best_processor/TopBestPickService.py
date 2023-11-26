@@ -20,6 +20,9 @@ class TopBestPickService(AbstractProcessor):
         self._filtered_data_repository = filtered_data_repository
 
     def pick_and_save_top_options(self, values: List[CleanDataDto], count: int) -> List[CleanDataDto]:
+        if len(values) == 0:
+            return values
+
         scores: List[CleanDataEstimate] = list(map(
             lambda clean_data_item: CleanDataEstimate(
                 id=clean_data_item.id,

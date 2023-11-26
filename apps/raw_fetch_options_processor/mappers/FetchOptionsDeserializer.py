@@ -24,7 +24,7 @@ class FetchOptionsDeserializer:
         self._mappers['filters'] = map_field('nflt', self._set_filters)
         self._mappers['rooms'] = map_field('room1')
 
-        self._filter_mappers += self._additional_filter_mappers
+        self._filter_mappers = self._filter_mappers | self._additional_filter_mappers
 
         result = {}
         for (name, mapper) in self._mappers.items():

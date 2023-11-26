@@ -1,4 +1,6 @@
 # This is a sample Python script
+from multiprocessing import Process
+
 from apps.analyser.AnalyzerApp import AnalyzerApp
 from apps.notifier.NotifierApp import NotifierApp
 from apps.raw_fetch_options_processor.RawFetchOptionsProcessorApp import RawFetchOptionsProcessorApp
@@ -14,6 +16,19 @@ from configlib.formatters.JsonConfigFormatter import JsonConfigFormatter
 from apps.db_migrations.BookAppsMigrations import BookAppsMigrations
 from datasource.DbLikeDataSource import DbLikeDataSource
 from datasource.providers.PostgresDataProvider import PostgresDataProvider
+
+
+def run_scavenger(config: dict):
+    ScavengerApp(config).start()
+
+
+def run_analyser(config: dict):
+    AnalyzerApp(config).start()
+
+
+def run_raw_fetch_options_processor(config: dict):
+    RawFetchOptionsProcessorApp(config).start()
+
 
 if __name__ == '__main__':
     print('Starting...')
@@ -31,21 +46,17 @@ if __name__ == '__main__':
 
     print(config_service.config())
 
-    ScavengerApp(config).start()
+    p1 = Process(target=run_scavenger, args=[config])
+    p2 = Process(target=run_analyser, args=[config])
+    p3 = Process(target=run_raw_fetch_options_processor, args=[config])
 
-    # AnalyzerApp(config).start()
+    p1.start()
+    p2.start()
+    p3.start()
 
-    # RawFetchOptionsProcessorApp(config).start()
-
-    # NotifierApp(config).start()
-
-    # TransitDataApp(config).start()
-
-    # options = FilterFetcher(data_source).fetch()
-
-    # options = str(FilterOptions({'review_score': 8, 'currency': 'RUB', 'max_price': 60000}))
-    # print(options)
-    # print(FilterOptionsSerializer().serialize(options[0].filter))
+    p1.join()
+    p2.join()
+    p3.join()
 
     # db_migrations_schemes = list(map(
     #     lambda app: app.migrations()(),
