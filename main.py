@@ -16,6 +16,7 @@ from configlib.formatters.JsonConfigFormatter import JsonConfigFormatter
 from apps.db_migrations.BookAppsMigrations import BookAppsMigrations
 from datasource.DbLikeDataSource import DbLikeDataSource
 from datasource.providers.PostgresDataProvider import PostgresDataProvider
+import sys
 
 
 def run_scavenger(config: dict):
@@ -28,6 +29,10 @@ def run_analyser(config: dict):
 
 def run_raw_fetch_options_processor(config: dict):
     RawFetchOptionsProcessorApp(config).start()
+
+
+def run_notifier(config: dict):
+    NotifierApp(config).start()
 
 
 if __name__ == '__main__':
@@ -49,22 +54,30 @@ if __name__ == '__main__':
     p1 = Process(target=run_scavenger, args=[config])
     p2 = Process(target=run_analyser, args=[config])
     p3 = Process(target=run_raw_fetch_options_processor, args=[config])
-
-    p1.start()
-    p2.start()
-    p3.start()
-
-    p1.join()
-    p2.join()
-    p3.join()
-
-    # db_migrations_schemes = list(map(
-    #     lambda app: app.migrations()(),
-    #     [AnalyzerApp, ScavengerApp, RawFetchOptionsProcessorApp, TransitDataApp]
-    # ))
+    p4 = Process(target=run_raw_fetch_options_processor, args=[config])
     #
-    # BookAppsMigrations(
-    #     data_source,
-    #     db_config,
-    #     [CommonMigrationScheme()] + db_migrations_schemes
-    # ).start()
+    # p1.start()
+    # p2.start()
+    # p3.start()
+    # p4.start()
+    #
+    # p1.join()
+    # p2.join()
+    # p3.join()
+    # p4.join()
+
+    migration_flag = sys.argv[1] == '-m'
+
+    if migration_flag:
+        print('Migration started!')
+
+        db_migrations_schemes = list(map(
+            lambda app: app.migrations()(),
+            [NotifierApp]
+        ))
+
+        BookAppsMigrations(
+            data_source,
+            db_config,
+            [CommonMigrationScheme()] + db_migrations_schemes
+        ).start()
