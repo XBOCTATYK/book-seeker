@@ -8,6 +8,7 @@ from apps.AbstractApp import AbstractApp
 from apps.notifier.db_migrations.NotifierMigrationScheme import NotifierMigrationScheme
 from apps.notifier.handlers.TelegramHandler import TelegramHandler
 from apps.notifier.handlers.StartHandlers import StartHandler
+from apps.notifier.models.AppConfig import AppConfig
 from apps.notifier.repositories.TgUserToFetchOptionsRepository import TgUserToFetchOptionsRepository
 from apps.notifier.services.TgUsersNotifier import TgUsersNotifier
 from apps.transit_data_app.repositories.FilteredDataRepository import FilteredDataRepository
@@ -66,8 +67,9 @@ class NotifierApp(AbstractApp):
             lambda chat_id, message: self._tg_users_notifier.notify(bot)
         )
 
-    def _run_telegram_app(self, bot_config: dict):
-        self._telegram_application = ApplicationBuilder().token(bot_config['token']).build()
+    def _run_telegram_app(self, bot_config: AppConfig):
+        bot_api_token = bot_config['token']
+        self._telegram_application = ApplicationBuilder().token(bot_api_token).build()
 
         for telegram_handler in self._handlers:
             current_handler: TelegramHandler = telegram_handler()
@@ -78,7 +80,7 @@ class NotifierApp(AbstractApp):
 
             self._telegram_application.add_handler(command_handler)
 
-        self._telegram_application.run_polling(poll_interval=2000)
+        self._telegram_application.run_polling(poll_interval=bot_config['poll_interval'])
         print('Telegram bot is running')
 
     def _run_schedulers(self):
@@ -86,10 +88,11 @@ class NotifierApp(AbstractApp):
         self._scheduler.start()
 
     def stop(self):
-        self._scheduler.shutdown()
+        self._data_source.close_session()
+        self._scheduler.shutdown(wait=True)
 
     def exports(self) -> dict:
-        pass
+        return {}
 
     @staticmethod
     def migrations():

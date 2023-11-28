@@ -64,7 +64,8 @@ class RawFetchOptionsProcessorApp(AbstractApp):
         self._scheduler.start()
 
     def stop(self):
-        pass
+        self._data_source.close_session()
+        self._scheduler.shutdown(wait=True)
 
     def exports(self) -> dict:
         return {}

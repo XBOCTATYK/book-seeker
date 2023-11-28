@@ -88,7 +88,7 @@ class AnalyzerApp(AbstractApp):
 
     def stop(self):
         self._data_source.close_session()
-        self._scheduler.shutdown()
+        self._scheduler.shutdown(wait=True)
 
     def _job(self):
         print('Cleaning raw data!')
