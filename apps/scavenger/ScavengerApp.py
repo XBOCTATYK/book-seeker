@@ -88,11 +88,12 @@ class ScavengerApp(AbstractApp):
             while True:
                 time.sleep(2)
         except (KeyboardInterrupt, SystemExit):
-            self._scheduler.shutdown()
-            self._offset_reset_scheduler.shutdown()
+            self.stop()
 
     def stop(self):
         self._data_source.close_session()
+        self._scheduler.shutdown(wait=True)
+        self._offset_reset_scheduler.shutdown(wait=True)
 
     def exports(self) -> dict:
         return {}

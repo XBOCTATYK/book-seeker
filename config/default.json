@@ -12,6 +12,6 @@
     "optionsUrl": "/options"
   },
   "bot": {
-    "estimate_top": 10
+    "poll_interval": 2000
   }
 }
