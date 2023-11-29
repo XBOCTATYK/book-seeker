@@ -5,10 +5,12 @@ from telegram import Bot
 from telegram.ext import ApplicationBuilder, CommandHandler, Application
 
 from apps.AbstractApp import AbstractApp
+from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
 from apps.notifier.db_migrations.NotifierMigrationScheme import NotifierMigrationScheme
 from apps.notifier.handlers.TelegramHandler import TelegramHandler
 from apps.notifier.handlers.StartHandlers import StartHandler
 from apps.notifier.models.AppConfig import AppConfig
+from apps.notifier.repositories.TgUserRepository import TgUserRepository
 from apps.notifier.repositories.TgUserToFetchOptionsRepository import TgUserToFetchOptionsRepository
 from apps.notifier.services.TgUsersNotifier import TgUsersNotifier
 from apps.transit_data_app.repositories.FilteredDataRepository import FilteredDataRepository
@@ -31,6 +33,7 @@ class NotifierApp(AbstractApp):
     _telegram_application: Application
     _scheduler: BackgroundScheduler
     _tg_users_notifier: TgUsersNotifier
+    _tg_user_repository: TgUserRepository
 
     def __init__(self, config: dict):
         super().__init__(config)
@@ -48,15 +51,20 @@ class NotifierApp(AbstractApp):
             self._data_source,
             self._tg_user_to_fetch_offset_pointer_name
         )
+        self._tg_user_repository = TgUserRepository(self._data_source)
         self._tg_user_to_fetch_options_repository = TgUserToFetchOptionsRepository(
             self._data_source,
             self._tg_user_to_fetch_offset_pointer
         )
-        self._tg_users_notifier = TgUsersNotifier(self._tg_user_to_fetch_options_repository)
-
-        self._run_telegram_app(bot_config)
+        self._tg_users_notifier = TgUsersNotifier(
+            self._tg_user_to_fetch_options_repository,
+            self._tg_user_repository,
+            ClearingDictionary(self._data_source)
+        )
 
         self._scheduler = BackgroundScheduler()
+        self._run_schedulers()
+        self._run_telegram_app(bot_config)
 
     def _job(self):
         print('Scheduler is running!')
@@ -64,7 +72,7 @@ class NotifierApp(AbstractApp):
 
         self._filtered_data_repository.process_next_n(
             10,
-            lambda chat_id, message: self._tg_users_notifier.notify(bot)
+            lambda filtered_results: self._tg_users_notifier.notify(bot, filtered_results)
         )
 
     def _run_telegram_app(self, bot_config: AppConfig):

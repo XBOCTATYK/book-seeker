@@ -1,6 +1,5 @@
 from typing import List
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from apps.AbstractApp import AbstractApp
@@ -107,7 +106,7 @@ class AnalyzerApp(AbstractApp):
     def exports(self) -> dict:
         return {}
 
-    def _process_data(self, dto_list: List[RawOptionsDataDto]):
+    def _process_data(self, dto_list: list[RawOptionsDataDto]):
         decoded_dto_list: List[RawDataDecodedDto] = list(map(lambda dto: self._db_raw_data_mapper.convert(dto), dto_list))
         selected_values: List[dict[str, str]] = list(map(
             lambda dto: self._clear_data_selector_service.select_to_dict(dto.data),
