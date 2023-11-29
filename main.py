@@ -45,23 +45,8 @@ if __name__ == '__main__':
     config_service.extend(DbConfigFormatter(data_source).get_config())
 
     print('Got config', config_service.config())
-
-    p1 = Process(target=run_scavenger, args=[config])
-    p2 = Process(target=run_analyser, args=[config])
-    p3 = Process(target=run_raw_fetch_options_processor, args=[config])
-    p4 = Process(target=run_raw_fetch_options_processor, args=[config])
-    #
-    # p1.start()
-    # p2.start()
-    # p3.start()
-    # p4.start()
-    #
-    # p1.join()
-    # p2.join()
-    # p3.join()
-    # p4.join()
-
-    migration_flag = sys.argv[1] == '-m'
+    print(sys.argv)
+    migration_flag = sys.argv[1] == '-m' if len(sys.argv) > 1 else False
 
     if migration_flag:
         print('Migration started!')
@@ -76,3 +61,20 @@ if __name__ == '__main__':
             db_config,
             [CommonMigrationScheme()] + db_migrations_schemes
         ).start()
+
+    p1 = Process(target=run_scavenger, args=[config])
+    p2 = Process(target=run_analyser, args=[config])
+    p3 = Process(target=run_raw_fetch_options_processor, args=[config])
+    p4 = Process(target=run_notifier, args=[config])
+    #
+    # p1.start()
+    # p2.start()
+    # p3.start()
+    p4.start()
+    #
+    # p1.join()
+    # p2.join()
+    # p3.join()
+    p4.join()
+
+

@@ -22,20 +22,21 @@ class FilteredDataRepository(AbstractRepository):
         self._offset_pointer_repository.setup_offset(FilteredResultDto)
 
     def process_next_n(self, count: int, fn: Callable[[List[FilteredResultDto]], T]) -> T:
-        return self.call_in_transaction(lambda sess: self._process_next_n(sess, count, fn))
+        return self.call_in_transaction(
+            lambda sess: self._offset_pointer_repository.call_in_window(
+                10,
+                lambda top, bottom: self._process_next_n(sess, top, bottom, fn)
+            )
 
-    def _process_next_n(self, sess: Session, count: int, fn: Callable[[List[FilteredResultDto]], T]) -> T:
-        offset = self._offset_pointer_repository.get_offset()
-        next_offset = offset + count
+        )
 
+    def _process_next_n(self, sess: Session, bottom: int, top: int, fn: Callable[[List[FilteredResultDto]], T]) -> T:
         search_statement = select(FilteredResultDto) \
-            .where(FilteredResultDto.id >= offset) \
-            .where(FilteredResultDto.id < next_offset)
+            .where(FilteredResultDto.id >= bottom) \
+            .where(FilteredResultDto.id < top)
         filtered_options = sess.execute(search_statement).scalars().all()
 
         result = fn(list(filtered_options))
-
-        self._offset_pointer_repository.update_value(next_offset)
 
         return result
 
