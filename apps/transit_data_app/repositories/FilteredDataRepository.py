@@ -34,7 +34,7 @@ class FilteredDataRepository(AbstractRepository):
         search_statement = select(FilteredResultDto) \
             .where(FilteredResultDto.id >= bottom) \
             .where(FilteredResultDto.id < top)
-        filtered_options = sess.execute(search_statement).scalars().all()
+        filtered_options = sess.execute(search_statement).unique().scalars().all()
 
         result = fn(list(filtered_options))
 

@@ -1,6 +1,6 @@
 from typing import List, Type
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from telegram import Bot
 from telegram.ext import ApplicationBuilder, CommandHandler, Application
 
@@ -31,7 +31,7 @@ class NotifierApp(AbstractApp):
     _tg_user_to_fetch_offset_pointer: OffsetPointerRepository
     _tg_user_to_fetch_offset_pointer_name = 'tg_user_to_fetch'
     _telegram_application: Application
-    _scheduler: BackgroundScheduler
+    _scheduler: AsyncIOScheduler
     _tg_users_notifier: TgUsersNotifier
     _tg_user_repository: TgUserRepository
 
@@ -43,6 +43,7 @@ class NotifierApp(AbstractApp):
     def start(self):
         db_config = self._config['db']
         bot_config = self._config['bot']
+        web_config = self._config['web']
 
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config), 'notifier_app_data_source')
         self._offset_pointer_notifier = OffsetPointerRepository(self._data_source, self._offset_pointer_notifier_name)
@@ -59,21 +60,22 @@ class NotifierApp(AbstractApp):
         self._tg_users_notifier = TgUsersNotifier(
             self._tg_user_to_fetch_options_repository,
             self._tg_user_repository,
-            ClearingDictionary(self._data_source)
+            ClearingDictionary(self._data_source),
+            web_config
         )
 
-        self._scheduler = BackgroundScheduler()
-        self._run_schedulers()
         self._run_telegram_app(bot_config)
 
-    def _job(self):
+    async def _job(self, ctx):
         print('Scheduler is running!')
         bot: Bot = self._telegram_application.bot
 
-        self._filtered_data_repository.process_next_n(
+        results = self._filtered_data_repository.process_next_n(
             10,
-            lambda filtered_results: self._tg_users_notifier.notify(bot, filtered_results)
+            lambda filtered_results: filtered_results
         )
+
+        await self._tg_users_notifier.notify(bot, results)
 
     def _run_telegram_app(self, bot_config: AppConfig):
         bot_api_token = bot_config['token']
@@ -88,12 +90,11 @@ class NotifierApp(AbstractApp):
 
             self._telegram_application.add_handler(command_handler)
 
+        self._scheduler = self._telegram_application.job_queue.scheduler
+        self._telegram_application.job_queue.run_repeating(self._job, 3)
+
         self._telegram_application.run_polling(poll_interval=bot_config['poll_interval'])
         print('Telegram bot is running')
-
-    def _run_schedulers(self):
-        self._scheduler.add_job(self._job, 'interval', seconds=10)
-        self._scheduler.start()
 
     def stop(self):
         self._data_source.close_session()

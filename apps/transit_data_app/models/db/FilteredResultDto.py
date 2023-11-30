@@ -14,5 +14,5 @@ class FilteredResultDto(BaseDto):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, unique=True, autoincrement=True)
     param_set: Mapped[int] = mapped_column(ForeignKey(CleanDataDto.id))
-    clean_data: Mapped[CleanDataDto] = relationship(lazy=True)
+    clean_data: Mapped[CleanDataDto] = relationship(lazy=False)
     created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), default=DateTime().ISO())
