@@ -7,7 +7,7 @@ from common.services.AbstractRepository import AbstractRepository
 
 class TgUserRepository(AbstractRepository):
     def get_all_active(self):
-        return self._get_all_active(self._get_current_session())
+        return self.call_in_transaction(self._get_all_active)
 
     def _get_all_active(self, sess: Session) -> list[TgUserDto]:
         statement = select(TgUserDto).where(TgUserDto.is_active == True)
