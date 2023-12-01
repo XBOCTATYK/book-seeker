@@ -12,6 +12,7 @@ from apps.notifier.handlers.StartHandlers import StartHandler
 from apps.notifier.models.AppConfig import AppConfig
 from apps.notifier.repositories.TgUserRepository import TgUserRepository
 from apps.notifier.repositories.TgUserToFetchOptionsRepository import TgUserToFetchOptionsRepository
+from apps.notifier.services.FilteredResultMessageFormatter import FilteredResultMessageFormatter
 from apps.notifier.services.TgUsersNotifier import TgUsersNotifier
 from apps.transit_data_app.repositories.FilteredDataRepository import FilteredDataRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository
@@ -60,8 +61,10 @@ class NotifierApp(AbstractApp):
         self._tg_users_notifier = TgUsersNotifier(
             self._tg_user_to_fetch_options_repository,
             self._tg_user_repository,
-            ClearingDictionary(self._data_source),
-            web_config
+            FilteredResultMessageFormatter(
+                ClearingDictionary(self._data_source),
+                web_config
+            )
         )
 
         self._run_telegram_app(bot_config)
