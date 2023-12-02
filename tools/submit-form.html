@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit fetch options</title>
+</head>
+<body>
+<h1>Submit fetch options</h1>
+<form id="dataForm">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name" required><br>
+
+    <label for="search_string">Search string:</label><br>
+    <input type="text" id="search_string" name="search_string" required><br>
+
+    <button type="button" id="submitButton">Send</button>
+</form>
+
+<script>
+    function getCookies() {
+        let c = document.cookie, v = 0, cookies = {};
+        if (document.cookie.match(/^\s*\$Version=(?:"1"|1);\s*(.*)/)) {
+            c = RegExp.$1;
+            v = 1;
+        }
+        if (v === 0) {
+            c.split(/[,;]/).map(function (cookie) {
+                const parts = cookie.split(/=/, 2),
+                    name = decodeURIComponent(parts[0].trimLeft()),
+                    value = parts.length > 1 ? decodeURIComponent(parts[1].trimRight()) : null;
+                cookies[name] = value;
+            });
+        } else {
+            c.match(/(?:^|\s+)([!#$%&'*+\-.0-9A-Z^`a-z|~]+)=([!#$%&'*+\-.0-9A-Z^`a-z|~]*|"(?:[\x20-\x7E\x80\xFF]|\\[\x00-\x7F])*")(?=\s*[,;]|$)/g).map(function ($0, $1) {
+                const name = $0,
+                    value = $1.charAt(0) === '"'
+                        ? $1.substr(1, -1).replace(/\\(.)/g, "$1")
+                        : $1;
+                cookies[name] = value;
+            });
+        }
+        return cookies;
+    }
+
+    document.getElementById('submitButton').addEventListener('click', function () {
+        var name = document.getElementById('name').value;
+        var searchString = document.getElementById('search_string').value;
+
+        var data = {
+            name: name,
+            search_string: searchString
+        };
+
+        fetch('https://example.com/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Token': getCookies()['xtoken']
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok.');
+        }).then(data => {
+            console.log('Success:', data);
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+</body>
+</html>
