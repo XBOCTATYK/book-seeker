@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit fetch options</title>
+</head>
+<body>
+    <h1>Submit fetch options</h1>
+    <form id="dataForm">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="search_string">Search string:</label><br>
+        <input type="text" id="search_string" name="search_string" required><br>
+
+        <button type="button" id="submitButton">Send</button>
+    </form>
+
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function() {
+            var name = document.getElementById('name').value;
+            var searchString = document.getElementById('search_string').value;
+
+            var data = {
+                name: name,
+                search_string: searchString
+            };
+
+            fetch('https://example.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            }).then(data => {
+                console.log('Success:', data);
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
