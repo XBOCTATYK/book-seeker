@@ -13,5 +13,8 @@
   },
   "bot": {
     "poll_interval": 2
+  },
+  "analyser": {
+    "pick_top": 3
   }
 }

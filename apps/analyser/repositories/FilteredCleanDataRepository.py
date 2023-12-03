@@ -25,10 +25,9 @@ class FilterCleanDataRepository(AbstractRepository):
 
     def _process_n_records(self, sess: Session, bottom: int, top: int, fn):
         statement = (select(CleanDataDto).where(CleanDataDto.id >= bottom)
-                     .where(CleanDataDto.id < top)
-                     .with_for_update(skip_locked=True, key_share=True))
+                     .where(CleanDataDto.id < top))
 
-        clean_data_dtos = sess.execute(statement).scalars().all()
+        clean_data_dtos = sess.execute(statement).unique().scalars().all()
 
         print(f'Found {len(clean_data_dtos)} records to filter')
         return fn(clean_data_dtos)
