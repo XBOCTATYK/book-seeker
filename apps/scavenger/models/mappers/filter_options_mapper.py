@@ -4,11 +4,11 @@ from apps.scavenger.models.constants.filter_types_enum import EFilterType
 
 
 def create_default_numeric_mapper(name: str, modifier=lambda x: x):
-    return lambda x: f"{name}={modifier(x[name])};" if name in x and x[name] != -1 else ''
+    return lambda x: f"{name}={modifier(x[name])};" if name in x and str(x[name]) != '-1' else ''
 
 
 def create_bool_mapper(name: str, modifier=lambda x: x):
-    return lambda x: f"{modifier(name)};" if name and x[name] != -1 in x else ''
+    return lambda x: f"{modifier(name)};" if name in x and str(x[name]) != '-1' else ''
 
 
 class FilterOptionsSerializer:

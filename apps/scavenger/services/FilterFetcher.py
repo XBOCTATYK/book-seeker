@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional, TypeVar, Callable
 
 from sqlalchemy import select
 from sqlalchemy.sql.functions import min
@@ -12,6 +12,8 @@ from common.services.AbstractRepository import AbstractRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource import DbLikeDataSource
 
+T = TypeVar('T')
+
 
 class FilterFetcher(AbstractRepository):
     _data_source: DbLikeDataSource = None
@@ -23,9 +25,12 @@ class FilterFetcher(AbstractRepository):
         self._offset_pointer_repository = offset_pointer_repository
 
     def fetch(self) -> Optional[FetchOptions]:
+        return self.process_fetch_options(lambda x: x)
+
+    def process_fetch_options(self, fn: Callable[[FetchOptions], T]) -> T:
         return self.call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_at_offset(
-                lambda offset: self._fetch(sess, offset)
+                lambda offset: self._fetch(sess, offset, fn)
             )
         )
 
@@ -34,16 +39,19 @@ class FilterFetcher(AbstractRepository):
             lambda sess: self._find_first(sess)
         )
 
-    def _fetch(self, sess: Session, offset: int) -> Optional[FetchOptions]:
+    def _fetch(self, sess: Session, offset: int, fn: Optional[Callable[[FetchOptions], T]] = None) -> T:
         statement = (select(FetchOptionsTable)
                      .where(FetchOptionsTable.id == offset))
-        res: FetchOptionsTable = sess.execute(statement).unique().scalar_one_or_none()
+        fetch_options_db: FetchOptionsTable = sess.execute(statement).unique().scalar_one_or_none()
 
-        if res is None or res.is_active is False:
+        if fetch_options_db is None or fetch_options_db.is_active is False:
             return None
 
-        fetch_options = self._process(res)
-        return fetch_options
+        fetch_options = self._process(fetch_options_db)
+
+        result = fn(fetch_options) if fn is not None else fetch_options
+
+        return result
 
     def _process(self, result: FetchOptionsTable) -> FetchOptions:
         return FetchOptionsMapper(FilterTypeDictionary(self._data_source)).from_entity(result)

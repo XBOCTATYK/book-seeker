@@ -58,21 +58,22 @@ class BookDataFetcher(DataFetcher):
         )
 
     def _get_query_params(self, fetch_options: FetchOptions) -> MarkersRequestDto:
+        lol = self._filter_options_serializer.serialize(fetch_options['filter'])
         return {
             'dest_type': 'city',
             'ref': 'searchresults',
             'stype': 1,
-            'limit': 50,
+            'limit': self._config['limit'],
             'lang': 'en-gb',
             'checkin': serialize_date_time(fetch_options['checkin']),
             'checkout': serialize_date_time(fetch_options['checkout']),
-            'room1': 'A,A', # serialize_persons_count(fetch_options['persons']),
+            'room1': serialize_persons_count(fetch_options['persons'] if fetch_options['persons'] else 2),
             'maps_opened': 1,
             'spr': 1,
             'nor': 1,
             'sech': 1,
             'currency': fetch_options['currency'],
-            'nflt': urllib.parse.quote(self._filter_options_serializer.serialize(fetch_options['filter'])),
+            'nflt': urllib.parse.quote(lol),
             'order': 'popularity',
             'ltfd_excl': f';BBOX={map_view_box_to_string(fetch_options["map_box"])}',
         }

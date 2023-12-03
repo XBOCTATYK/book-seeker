@@ -3,12 +3,11 @@ import os
 import time
 
 from DateTime import DateTime
-from apscheduler.executors.pool import ProcessPoolExecutor, ThreadPoolExecutor
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.schedulers.blocking import BlockingScheduler
 
 from apps.AbstractApp import AbstractApp
 from apps.scavenger.db_migrations.ScavengetAppMigrationsScheme import ScavengerAppMigrationsScheme
+from apps.scavenger.models.logic.FetchOptions import FetchOptions
 from apps.scavenger.models.mappers.filter_options_mapper import FilterOptionsSerializer
 from apps.scavenger.services.BookDataFetcher import BookDataFetcher
 from apps.scavenger.services.DataFetcher import DataFetcher
@@ -58,28 +57,30 @@ class ScavengerApp(AbstractApp):
         self._run_schedulers()
 
     def _job(self):
-        options = self._fiter_fetcher.fetch()
+        self._fiter_fetcher.process_fetch_options(self._fetch_and_save)
 
-        if options is None:
-            return
-
+    def _fetch_and_save(self, options: FetchOptions) -> FetchOptions:
         data = self._data_fetcher.fetch(options)
 
         # writes possible hotels to repository
-        items = list(map(lambda item: RawOptionsDataDto(
-            raw_data=json.JSONEncoder().encode(item),
-            writer=os.getlogin(),
-            datetime=DateTime().ISO()
-        ), data['b_hotels']))
+        items = list(map(
+            lambda item: RawOptionsDataDto(
+                raw_data=json.JSONEncoder().encode(item),
+                writer=os.getlogin(),
+                datetime=DateTime().ISO()
+            ), data['b_hotels']
+        ))
 
         self._repository.save_all(items)
+
+        return options
 
     def _scavenger_reset(self):
         min_value = self._fiter_fetcher.find_first()
         self._analyser_offset_repository.update_value(min_value)
 
     def _run_schedulers(self):
-        self._scheduler.add_job(self._job, 'interval', minutes=1)
+        self._scheduler.add_job(self._job, 'interval', seconds=10)
         self._offset_reset_scheduler.add_job(self._scavenger_reset, 'interval', hours=24)
         self._scheduler.start()
         self._offset_reset_scheduler.start()

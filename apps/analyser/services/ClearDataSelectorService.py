@@ -1,5 +1,5 @@
-from common.services.DbDictionary import DbDictionary
 from pydash import get, split
+from common.services.DbDictionary import DbDictionary
 
 
 class ClearDataSelectorService:
