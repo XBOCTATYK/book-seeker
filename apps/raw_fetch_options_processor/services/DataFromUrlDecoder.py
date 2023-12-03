@@ -10,4 +10,3 @@ class DataFromUrlDecoder(Decoder):
         result = dict(map(lambda item: (item[0], item[1][0]), qs.items()))
 
         return result
-

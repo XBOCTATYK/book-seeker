@@ -9,7 +9,8 @@
   },
   "web": {
     "baseUrl": "https://site.com",
-    "optionsUrl": "/options"
+    "optionsUrl": "/options",
+    "limit": 50
   },
   "bot": {
     "poll_interval": 2
