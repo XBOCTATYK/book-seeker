@@ -25,7 +25,7 @@ class FilteredResultMessageFormatter:
 
     def _format_url(self, acc: list, item):
         next_val = self._find_url(item.clean_data.param_set)
-        return also(acc, lambda x: acc.append(self._config['baseUrl'] + next_val))
+        return also(acc, lambda x: acc.append('https://' + self._config['baseUrl'] + next_val))
 
     def _find_url(self, param_set: list[CleanDataParamDto]) -> str:
         result = next(x for x in param_set if x.type == self._dict_id)

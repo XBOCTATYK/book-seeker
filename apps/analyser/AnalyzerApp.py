@@ -55,6 +55,7 @@ class AnalyzerApp(AbstractApp):
 
     def start(self):
         db_config = self._config['db']
+        analyser_config = self._config['analyser']
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config))
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source,
                                                                    self._analyser_offset_repository_name)
@@ -91,12 +92,15 @@ class AnalyzerApp(AbstractApp):
 
     def _job(self):
         print('Cleaning raw data!')
-        self._raw_data_repository.process_next_n(100, self._process_data)
+        self._raw_data_repository.process_next_n(10, self._process_data)
 
         print('Filtering data')
         self._filtered_clean_data_repository.process_n_records(
             100,
-            lambda record_list: self._top_best_service.pick_and_save_top_options(record_list, 3)
+            lambda record_list: self._top_best_service.pick_and_save_top_options(
+                record_list,
+                self._config['analyser']['pick_top']
+            )
         )
 
     def _run_schedulers(self):
@@ -107,7 +111,10 @@ class AnalyzerApp(AbstractApp):
         return {}
 
     def _process_data(self, dto_list: list[RawOptionsDataDto]):
-        decoded_dto_list: List[RawDataDecodedDto] = list(map(lambda dto: self._db_raw_data_mapper.convert(dto), dto_list))
+        decoded_dto_list: List[RawDataDecodedDto] = list(map(
+            lambda dto: self._db_raw_data_mapper.convert(dto),
+            dto_list
+        ))
         selected_values: List[dict[str, str]] = list(map(
             lambda dto: self._clear_data_selector_service.select_to_dict(dto.data),
             decoded_dto_list

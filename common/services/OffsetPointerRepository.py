@@ -37,6 +37,9 @@ class OffsetPointerRepository(AbstractRepository):
 
         result = fn(offset)
 
+        if result is None:
+            return None
+
         self.update_value(offset + 1)
 
         return result

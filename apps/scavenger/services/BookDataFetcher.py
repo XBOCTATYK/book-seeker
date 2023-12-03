@@ -1,3 +1,4 @@
+import urllib
 from urllib.parse import unquote
 from deepmerge import always_merger
 
@@ -34,6 +35,8 @@ class BookDataFetcher(DataFetcher):
         url = unquote(self._create_url(fetch_options))
         headers = self._get_headers()
 
+        print(url)
+
         self._last_result = urllib3.request(
             url=url,
             method='GET',
@@ -58,17 +61,18 @@ class BookDataFetcher(DataFetcher):
         return {
             'dest_type': 'city',
             'ref': 'searchresults',
+            'stype': 1,
             'limit': 50,
             'lang': 'en-gb',
             'checkin': serialize_date_time(fetch_options['checkin']),
             'checkout': serialize_date_time(fetch_options['checkout']),
-            'room1': serialize_persons_count(fetch_options['persons']),
+            'room1': 'A,A', # serialize_persons_count(fetch_options['persons']),
             'maps_opened': 1,
             'spr': 1,
             'nor': 1,
             'sech': 1,
             'currency': fetch_options['currency'],
-            'nflt': self._filter_options_serializer.serialize(fetch_options['filter']),
+            'nflt': urllib.parse.quote(self._filter_options_serializer.serialize(fetch_options['filter'])),
             'order': 'popularity',
             'ltfd_excl': f';BBOX={map_view_box_to_string(fetch_options["map_box"])}',
         }
