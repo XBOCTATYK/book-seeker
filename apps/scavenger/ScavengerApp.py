@@ -5,7 +5,6 @@ import time
 from DateTime import DateTime
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
-from sqlalchemy import Engine
 
 from apps.AbstractApp import AbstractApp
 from apps.scavenger.db_migrations.ScavengetAppMigrationsScheme import ScavengerAppMigrationsScheme
@@ -46,17 +45,14 @@ class ScavengerApp(AbstractApp):
             config['secret_headers']
         )
 
+        self._scheduler = BackgroundScheduler()
+        self._offset_reset_scheduler = BackgroundScheduler()
+
     def start(self):
         print('Scavenger has started!')
         db_config = self._config['db']
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config))
 
-        self._scheduler = BackgroundScheduler()
-        self._offset_reset_scheduler = BackgroundScheduler(
-            jobstores={'default': SQLAlchemyJobStore(
-                engine=self._data_source.get_provider().get_engine()
-            )}
-        )
 
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source, self._analyser_offset_repository_name)
         self._repository = RawDataRepository(DbLikeDataSource(PostgresDataProvider(db_config)), self._analyser_offset_repository)
