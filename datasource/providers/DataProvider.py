@@ -1,20 +1,39 @@
+from abc import ABC, abstractmethod
+from typing import TypeVar
+
 from sqlalchemy.orm import Session
 
+ENGINE = TypeVar('ENGINE')
+CON = TypeVar('CON')
+SESS = TypeVar('SESS')
 
-class DataProvider:
+
+class DataProvider(ABC):
     name = 'abstract'
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.name
 
-    def connect(self):
+    @abstractmethod
+    def connect(self) -> SESS:
         return None
 
+    @abstractmethod
     def disconnect(self):
         return None
 
-    def get_connection(self):
+    @abstractmethod
+    def get_connection(self) -> CON:
         return None
 
-    def create_session(self) -> Session:
+    @abstractmethod
+    def get_engine(self) -> ENGINE:
+        return None
+
+    @abstractmethod
+    def get_connect_url(self) -> str:
+        return ''
+
+    @abstractmethod
+    def create_session(self) -> SESS:
         return None

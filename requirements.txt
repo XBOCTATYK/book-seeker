@@ -8,3 +8,4 @@ pydash~=7.0.6
 APScheduler~=3.10.4
 telegram~=0.0.1
 psycopg2~=2.9.9
+psycopg2-binary

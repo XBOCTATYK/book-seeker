@@ -3,7 +3,9 @@ import os
 import time
 
 from DateTime import DateTime
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
+from sqlalchemy import Engine
 
 from apps.AbstractApp import AbstractApp
 from apps.scavenger.db_migrations.ScavengetAppMigrationsScheme import ScavengerAppMigrationsScheme
@@ -43,13 +45,19 @@ class ScavengerApp(AbstractApp):
             config['book'],
             config['secret_headers']
         )
-        self._scheduler = BackgroundScheduler()
-        self._offset_reset_scheduler = BackgroundScheduler()
 
     def start(self):
         print('Scavenger has started!')
         db_config = self._config['db']
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config))
+
+        self._scheduler = BackgroundScheduler()
+        self._offset_reset_scheduler = BackgroundScheduler(
+            jobstores={'default': SQLAlchemyJobStore(
+                engine=self._data_source.get_provider().get_engine()
+            )}
+        )
+
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source, self._analyser_offset_repository_name)
         self._repository = RawDataRepository(DbLikeDataSource(PostgresDataProvider(db_config)), self._analyser_offset_repository)
         self._fiter_fetcher = FilterFetcher(self._data_source, self._analyser_offset_repository)
@@ -81,8 +89,8 @@ class ScavengerApp(AbstractApp):
 
     def _run_schedulers(self):
         self._scheduler.add_job(self._job, 'interval', seconds=10)
-        self._offset_reset_scheduler.add_job(self._scavenger_reset, 'interval', hours=24)
         self._scheduler.start()
+        self._offset_reset_scheduler.add_job(self._scavenger_reset, 'interval', hours=24)
         self._offset_reset_scheduler.start()
 
         try:

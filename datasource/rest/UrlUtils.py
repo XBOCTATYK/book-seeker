@@ -8,7 +8,17 @@ class UrlUtils:
         field_names=['scheme', 'netloc', 'url', 'path', 'query', 'fragment']
     )
 
-    def create_url(self, host: str, path: str, query: dict, scheme: str = 'https', anchor: str = None):
+    def create_url(
+            self,
+            host: str,
+            path: str = '',
+            query=None,
+            scheme: str = 'https',
+            anchor: str = None
+    ):
+        if query is None:
+            query = {}
+
         return urlunparse(
             self.Components(
                 scheme=scheme,
@@ -16,6 +26,6 @@ class UrlUtils:
                 query=urlencode(query, True, '', 'utf-8'),
                 path='',
                 url=path,
-                fragment=anchor
+                fragment=anchor,
             )
         )

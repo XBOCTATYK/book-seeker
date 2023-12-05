@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, URL
+from sqlalchemy import create_engine, URL, Engine, Connection
 from sqlalchemy.orm import Session, close_all_sessions
 
 from datasource.configs.DbConfig import DbConfig
@@ -18,8 +18,8 @@ def create_db_connect_url(db_config: DbConfig):
 
 class PostgresDataProvider(DataProvider):
     config: DbConfig = None
-    engine = None
-    connection = None
+    engine: Engine = None
+    connection: Connection = None
 
     def __init__(self, config: DbConfig):
         super().__init__()
@@ -29,12 +29,15 @@ class PostgresDataProvider(DataProvider):
         self.config = config
         self.engine = create_engine(create_db_connect_url(config))
 
-    def connect(self):
+    def connect(self) -> Session:
         connection = self._create_or_get_connection()
         return Session(connection)
 
-    def get_connection(self):
+    def get_connection(self) -> Connection:
         return self._create_or_get_connection()
+
+    def get_engine(self) -> Engine:
+        return self.engine
 
     def disconnect(self):
         if self.connection is not None:
@@ -45,7 +48,10 @@ class PostgresDataProvider(DataProvider):
     def create_session(self) -> Session:
         return self.connect()
 
-    def _create_or_get_connection(self):
+    def get_connect_url(self) -> str:
+        return str(create_db_connect_url(self.config))
+
+    def _create_or_get_connection(self) -> Connection:
         if self.connection is None:
             self.connection = self.engine.connect()\
                 .execution_options(schema_translate_map={None: self.config['scheme']})
