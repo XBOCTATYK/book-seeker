@@ -14,20 +14,20 @@ from datasource.providers.PostgresDataProvider import PostgresDataProvider
 import sys
 
 
-def run_scavenger(config: dict):
-    ScavengerApp(config).start()
+def run_scavenger(scavenger_config: dict):
+    ScavengerApp(scavenger_config).start()
 
 
-def run_analyser(config: dict):
-    AnalyzerApp(config).start()
+def run_analyser(analyser_config: dict):
+    AnalyzerApp(analyser_config).start()
 
 
-def run_raw_fetch_options_processor(config: dict):
-    RawFetchOptionsProcessorApp(config).start()
+def run_raw_fetch_options_processor(rafo_config: dict):
+    RawFetchOptionsProcessorApp(rafo_config).start()
 
 
-def run_notifier(config: dict):
-    NotifierApp(config).start()
+def run_notifier(notifier_config: dict):
+    NotifierApp(notifier_config).start()
 
 
 if __name__ == '__main__':
@@ -68,13 +68,13 @@ if __name__ == '__main__':
     p4 = Process(target=run_notifier, args=[config])
     #
     p1.start()
-    p2.start()
-    p3.start()
-    p4.start()
+    #p2.start()
+    #p3.start()
+    #p4.start()
     #
     p1.join()
-    p2.join()
-    p3.join()
-    p4.join()
+    #p2.join()
+    #p3.join()
+    #p4.join()
 
 

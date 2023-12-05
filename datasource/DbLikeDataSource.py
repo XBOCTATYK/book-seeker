@@ -27,4 +27,7 @@ class DbLikeDataSource:
     def get_connection(self) -> Connection:
         return self._data_provider.get_connection()
 
+    def get_provider(self) -> DataProvider:
+        return self._data_provider
+
 
