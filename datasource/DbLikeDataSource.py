@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import Connection
 from sqlalchemy.orm import Session
 
@@ -6,7 +8,7 @@ from datasource.providers.DataProvider import DataProvider
 
 class DbLikeDataSource:
     name: str = None
-    _session: Session = None
+    _session: Optional[Session] = None
     _data_provider: DataProvider = None
 
     def __init__(self, data_provider: DataProvider, name: str = 'db_like_data_source'):
