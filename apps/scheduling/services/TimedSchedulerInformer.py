@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from DateTime import DateTime
 from apscheduler.schedulers.base import BaseScheduler
 
 from apps.scheduling.repositories.SchedulerWorkTimeRepository import SchedulerWorkTimeRepository
@@ -23,8 +22,9 @@ class TimedSchedulerInformer:
         if scheduler_last_work_time is None:
             scheduler_last_work_time = self._scheduler_work_time_repository.create_work_time_if_exists(name, 1)
 
-        datetime_unformatted = DateTime(scheduler_last_work_time.time)
-        formatted_datetime = datetime.fromtimestamp(datetime_unformatted.time)
+        now = int(datetime.now().timestamp())
+        scheduler_last_work_time_int = max(scheduler_last_work_time.time, now + 2000)
 
+        formatted_datetime = datetime.fromtimestamp(scheduler_last_work_time_int)
         return formatted_datetime
 
