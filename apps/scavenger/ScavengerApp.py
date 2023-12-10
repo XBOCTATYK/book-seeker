@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from datetime import timedelta
 
 from DateTime import DateTime
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -61,7 +62,8 @@ class ScavengerApp(AbstractApp):
         self._fiter_fetcher = FilterFetcher(self._data_source, self._analyser_offset_repository)
 
         self._scheduler_work_time_repository = SchedulerWorkTimeRepository(self._data_source)
-        self._timed_scheduler_informer = TimedSchedulerInformer(self._scheduler_work_time_repository)
+        self._timed_scheduler_informer = TimedSchedulerInformer(self._scheduler, self._scheduler_work_time_repository)\
+            .set_worktime_interval(timedelta(days=1))
 
         self._run_schedulers()
 

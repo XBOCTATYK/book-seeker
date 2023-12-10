@@ -18,8 +18,9 @@ class TimedSchedulerInformer:
         self._scheduler = scheduler
         self._scheduler_work_time_repository = scheduler_work_time_repository
 
-    def set_worktime_interval(self, interval: timedelta):
+    def set_worktime_interval(self, interval: timedelta) -> 'TimedSchedulerInformer':
         self._worktime_interval = interval
+        return self
 
     def get_next_work_time(self, name: str) -> datetime:
         if self._worktime_interval is None:

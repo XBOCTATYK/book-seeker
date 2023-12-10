@@ -1,6 +1,6 @@
-from select import select
 from typing import Callable, TypeVar, Optional
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from apps.scheduling.models.db.SchedulerWorkTimeDto import SchedulerWorkTimeDto
