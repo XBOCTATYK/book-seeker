@@ -1,18 +1,16 @@
-from typing import List, Callable, Type
+from typing import List, Type, Callable
 
 from sqlalchemy import Connection
 
-from apps.notifier.models.db.TgUserDto import TgUserDto
-from apps.notifier.models.db.TgUserToFetchOptions import TgUserToFetchOptions
+from apps.scheduling.models.db.SchedulerWorkTimeDto import SchedulerWorkTimeDto
 from common.db_migrations.AbstractMigrationScheme import AbstractMigrationScheme
 from common.model.db.BaseDto import BaseDto
 
 
-class NotifierMigrationScheme(AbstractMigrationScheme):
+class SchedulingMigrationScheme(AbstractMigrationScheme):
     def get_tables(self) -> List[Type[BaseDto]]:
         return [
-            TgUserDto,
-            TgUserToFetchOptions,
+            SchedulerWorkTimeDto
         ]
 
     def get_dictionaries(self) -> dict[str, List[str]]:
