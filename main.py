@@ -67,14 +67,14 @@ if __name__ == '__main__':
     p3 = Process(target=run_raw_fetch_options_processor, args=[config])
     p4 = Process(target=run_notifier, args=[config])
     #
-    p1.start()
-    p2.start()
-    p3.start()
+    # p1.start()
+    # p2.start()
+    # p3.start()
     p4.start()
     #
-    p1.join()
-    p2.join()
-    p3.join()
+    # p1.join()
+    # p2.join()
+    # p3.join()
     p4.join()
 
 

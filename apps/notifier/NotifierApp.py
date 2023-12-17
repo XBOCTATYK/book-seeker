@@ -7,13 +7,16 @@ from telegram.ext import ApplicationBuilder, CommandHandler, Application
 from apps.AbstractApp import AbstractApp
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
 from apps.notifier.db_migrations.NotifierMigrationScheme import NotifierMigrationScheme
+from apps.notifier.handlers.AddTaskHandler import AddTaskHandler
 from apps.notifier.handlers.TelegramHandler import TelegramHandler
 from apps.notifier.handlers.StartHandlers import StartHandler
 from apps.notifier.models.AppConfig import AppConfig
 from apps.notifier.repositories.TgUserRepository import TgUserRepository
 from apps.notifier.repositories.TgUserToFetchOptionsRepository import TgUserToFetchOptionsRepository
 from apps.notifier.services.FilteredResultMessageFormatter import FilteredResultMessageFormatter
+from apps.notifier.services.RawFetchOptionsService import RawFetchOptionsService
 from apps.notifier.services.TgUsersNotifier import TgUsersNotifier
+from apps.raw_fetch_options_processor.repositories.RawFetchOptionsRepository import RawFetchOptionsRepository
 from apps.transit_data_app.repositories.FilteredDataRepository import FilteredDataRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
@@ -21,8 +24,8 @@ from datasource.providers.PostgresDataProvider import PostgresDataProvider
 
 
 class NotifierApp(AbstractApp):
-    _handlers: List[Type[TelegramHandler]] = [
-        StartHandler
+    _handlers: List[TelegramHandler] = [
+        StartHandler()
     ]
     _data_source: DbLikeDataSource
     _offset_pointer_notifier: OffsetPointerRepository
@@ -35,6 +38,8 @@ class NotifierApp(AbstractApp):
     _scheduler: AsyncIOScheduler
     _tg_users_notifier: TgUsersNotifier
     _tg_user_repository: TgUserRepository
+    _raw_fetch_options_service: RawFetchOptionsService
+    _raw_fetch_options_repository: RawFetchOptionsRepository
 
     def __init__(self, config: dict):
         super().__init__(config)
@@ -58,6 +63,10 @@ class NotifierApp(AbstractApp):
             self._data_source,
             self._tg_user_to_fetch_offset_pointer
         )
+        self._raw_fetch_options_repository = RawFetchOptionsRepository(
+            self._data_source, OffsetPointerRepository(self._data_source, 'raw_fetch_options_notifier')
+        )
+        self._raw_fetch_options_service = RawFetchOptionsService(self._raw_fetch_options_repository)
         self._tg_users_notifier = TgUsersNotifier(
             self._tg_user_to_fetch_options_repository,
             self._tg_user_repository,
@@ -66,6 +75,8 @@ class NotifierApp(AbstractApp):
                 web_config
             )
         )
+
+        self._handlers.append(AddTaskHandler(self._raw_fetch_options_service))
 
         self._run_telegram_app(bot_config)
 
@@ -85,7 +96,7 @@ class NotifierApp(AbstractApp):
         self._telegram_application = ApplicationBuilder().token(bot_api_token).build()
 
         for telegram_handler in self._handlers:
-            current_handler: TelegramHandler = telegram_handler()
+            current_handler: TelegramHandler = telegram_handler
             command_handler = CommandHandler(
                 current_handler.command,
                 current_handler.get_handler()

@@ -3,7 +3,7 @@ from typing import List, Callable, TypeVar
 
 from sqlalchemy.orm import Session
 
-from apps.raw_fetch_options_processor.model.db.RawFetchOptions import RawFetchOptions
+from apps.raw_fetch_options_processor.model.db.RawFetchOptionsDto import RawFetchOptionsDto
 from common.services.AbstractRepository import AbstractRepository
 from common.services.OffsetPointerRepository import OffsetPointerRepository
 from datasource.DbLikeDataSource import DbLikeDataSource
@@ -18,7 +18,7 @@ class RawFetchOptionsRepository(AbstractRepository):
         super().__init__(data_source)
         self._offset_pointer_repository = offset_pointer_repository
 
-    def process_next_n_records(self, count: int, fn: Callable[[List[RawFetchOptions]], T]) -> T:
+    def process_next_n_records(self, count: int, fn: Callable[[List[RawFetchOptionsDto]], T]) -> T:
         return self.call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_in_window(
                 count,
@@ -26,14 +26,17 @@ class RawFetchOptionsRepository(AbstractRepository):
             )
         )
 
-    def _process_next_n_records(self, sess: Session, low: int, top: int, fn: Callable[[List[RawFetchOptions]], T]) -> T:
+    def _process_next_n_records(self, sess: Session, low: int, top: int, fn: Callable[[List[RawFetchOptionsDto]], T]) -> T:
         record_list = self._find_next_n_records(sess, low, top)
         print(f'Found {len(record_list)} raw fetch options!')
         return fn(record_list)
 
-    def _find_next_n_records(self, sess: Session, low: int, top: int) -> List[RawFetchOptions]:
-        search_statement = select(RawFetchOptions).where(RawFetchOptions.id >= low) \
-            .where(RawFetchOptions.id < top).with_for_update(skip_locked=True)
+    def _find_next_n_records(self, sess: Session, low: int, top: int) -> List[RawFetchOptionsDto]:
+        search_statement = select(RawFetchOptionsDto).where(RawFetchOptionsDto.id >= low) \
+            .where(RawFetchOptionsDto.id < top).with_for_update(skip_locked=True)
         raw_fetch_options_db_result = sess.execute(search_statement)
 
         return list(raw_fetch_options_db_result.scalars().all())
+
+    def save(self, raw_fetch_options_dto: RawFetchOptionsDto) -> int:
+        return self.call_in_transaction(lambda sess: sess.add(raw_fetch_options_dto))
