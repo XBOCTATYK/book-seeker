@@ -43,8 +43,7 @@ class RawFetchOptionsRepository(AbstractRepository):
         return self.call_in_transaction(lambda sess: self._save(sess, raw_fetch_options_dto))
 
     def _save(self, sess: Session, raw_fetch_options_dto: RawFetchOptionsDto) -> int:
-        statement = insert(RawFetchOptionsDto)\
-            .values({'url': raw_fetch_options_dto.url, 'status': raw_fetch_options_dto.status})\
-            .returning(RawFetchOptionsDto.id)
-        result = sess.execute(statement).scalar()
-        return result
+        sess.add(raw_fetch_options_dto)
+        sess.flush([raw_fetch_options_dto])
+
+        return raw_fetch_options_dto.id
