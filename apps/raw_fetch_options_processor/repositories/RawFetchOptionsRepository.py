@@ -45,5 +45,6 @@ class RawFetchOptionsRepository(AbstractRepository):
     def _save(self, sess: Session, raw_fetch_options_dto: RawFetchOptionsDto) -> int:
         sess.add(raw_fetch_options_dto)
         sess.flush([raw_fetch_options_dto])
+        print(f'Saved {len(raw_fetch_options_dto.url)}!')
 
         return raw_fetch_options_dto.id

@@ -75,6 +75,7 @@ class SchedulerWorkTimeRepository(AbstractRepository):
 
         scheduler_work_time.time = work_time
         sess.add(scheduler_work_time)
+        sess.flush([scheduler_work_time])
 
     def _create_work_time_if_exists(self, sess: Session, name: str, initial_work_time: int) -> SchedulerWorkTimeDto:
         scheduler_work_time = self._get_scheduler_work_time(sess, name)
@@ -82,6 +83,7 @@ class SchedulerWorkTimeRepository(AbstractRepository):
         if scheduler_work_time is None:
             scheduler_work_time = SchedulerWorkTimeDto(scheduler_name=name, time=initial_work_time)
             sess.add(scheduler_work_time)
+            sess.flush([scheduler_work_time])
 
         return scheduler_work_time
 
