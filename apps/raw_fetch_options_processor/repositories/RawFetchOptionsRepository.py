@@ -1,6 +1,7 @@
-from sqlalchemy import select
-from typing import List, Callable, TypeVar
+from sqlalchemy import select, Result, CursorResult
+from typing import List, Callable, TypeVar, Tuple, Any
 
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from apps.raw_fetch_options_processor.model.db.RawFetchOptionsDto import RawFetchOptionsDto
@@ -39,4 +40,11 @@ class RawFetchOptionsRepository(AbstractRepository):
         return list(raw_fetch_options_db_result.scalars().all())
 
     def save(self, raw_fetch_options_dto: RawFetchOptionsDto) -> int:
-        return self.call_in_transaction(lambda sess: sess.add(raw_fetch_options_dto))
+        return self.call_in_transaction(lambda sess: self._save(sess, raw_fetch_options_dto))
+
+    def _save(self, sess: Session, raw_fetch_options_dto: RawFetchOptionsDto) -> int:
+        statement = insert(RawFetchOptionsDto)\
+            .values({'url': raw_fetch_options_dto.url, 'status': raw_fetch_options_dto.status})\
+            .returning(RawFetchOptionsDto.id)
+        result = sess.execute(statement).scalar()
+        return result
