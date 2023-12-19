@@ -3,9 +3,10 @@ from sqlalchemy import BigInteger, ForeignKey, String
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from common.lib.to_str import to_str
 from common.model.db.BaseDto import BaseDto
 
-
+@to_str
 class FilterOptionsTable(BaseDto):
     __tablename__ = 'filter_options'
 

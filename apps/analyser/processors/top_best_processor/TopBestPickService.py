@@ -38,10 +38,8 @@ class TopBestPickService(AbstractProcessor):
         )
 
         sorted_items_ids: List[int] = list(map(lambda item: item['id'], sorted_by_score_item))
-
         top_values = sorted_items_ids[0:count]
-
-        rest = self._filtered_data_repository.insert_filtered_data(top_values)
+        self._filtered_data_repository.insert_filtered_data(top_values)
 
         return values
 

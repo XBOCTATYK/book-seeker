@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from telegram import Bot
@@ -8,8 +8,8 @@ from apps.AbstractApp import AbstractApp
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
 from apps.notifier.db_migrations.NotifierMigrationScheme import NotifierMigrationScheme
 from apps.notifier.handlers.AddTaskHandler import AddTaskHandler
-from apps.notifier.handlers.TelegramHandler import TelegramHandler
 from apps.notifier.handlers.StartHandlers import StartHandler
+from apps.notifier.handlers.TelegramHandler import TelegramHandler
 from apps.notifier.models.AppConfig import AppConfig
 from apps.notifier.repositories.TgUserRepository import TgUserRepository
 from apps.notifier.repositories.TgUserToFetchOptionsRepository import TgUserToFetchOptionsRepository

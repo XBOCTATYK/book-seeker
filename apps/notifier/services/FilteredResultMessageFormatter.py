@@ -4,9 +4,10 @@ from apps.analyser.models.db.CleanDataParamDto import CleanDataParamDto
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
 from apps.transit_data_app.models.db.FilteredResultDto import FilteredResultDto
 from common.lib.also import also
+from common.services.MessageFormatter import MessageFormatter
 
 
-class FilteredResultMessageFormatter:
+class FilteredResultMessageFormatter(MessageFormatter):
     _dict_id: int = None
     _config: dict = {}
 
@@ -19,7 +20,7 @@ class FilteredResultMessageFormatter:
         self._dict_id = self._clean_data_params_dictionary.select_by_id('b_url')
         self._config = config
 
-    def format(self, filtered_data: list[FilteredResultDto]):
+    def format(self, filtered_data: list[FilteredResultDto]) -> str:
         result_list = reduce(self._format_url, filtered_data, [])
         return '\n ===== \n'.join(str(x) for x in result_list)
 

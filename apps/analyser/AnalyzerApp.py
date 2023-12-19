@@ -55,7 +55,6 @@ class AnalyzerApp(AbstractApp):
 
     def start(self):
         db_config = self._config['db']
-        analyser_config = self._config['analyser']
         self._data_source = DbLikeDataSource(PostgresDataProvider(db_config))
         self._analyser_offset_repository = OffsetPointerRepository(self._data_source,
                                                                    self._analyser_offset_repository_name)

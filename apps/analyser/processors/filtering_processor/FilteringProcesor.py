@@ -1,14 +1,15 @@
 from typing import List
 
 from apps.analyser.processors.AbstractProcessor import AbstractProcessor
+from common.lib.make_filter import make_filter_for_map
 
 
 class FilteringProcessor(AbstractProcessor):
     _filters = [
-        lambda x: x['b_review_nr'] > 60 if 'b_review_nr' in x and x['b_review_nr'] is not None else False
+        make_filter_for_map('b_review_nr', lambda x: x > 60)
     ]
 
-    def process(self, values: List[dict]):
+    def process(self, values: List[dict]) -> List[dict]:
         result = []
 
         for current_filter in self._filters:

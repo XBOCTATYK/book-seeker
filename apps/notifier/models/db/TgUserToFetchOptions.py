@@ -1,15 +1,15 @@
-from typing import List
-
 from DateTime import DateTime
 from sqlalchemy import BigInteger, ForeignKey
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import mapped_column, Mapped, relationship
+from sqlalchemy.orm import mapped_column, Mapped
 
 from apps.notifier.models.db.TgUserDto import TgUserDto
 from apps.scavenger.models.db.FetchOptionsTable import FetchOptionsTable
+from common.lib.to_str import to_str
 from common.model.db.BaseDto import BaseDto
 
 
+@to_str
 class TgUserToFetchOptions(BaseDto):
     __tablename__ = 'tg_user_to_fetch_options'
 

@@ -1,7 +1,6 @@
-from sqlalchemy import select, Result, CursorResult
-from typing import List, Callable, TypeVar, Tuple, Any
+from typing import List, Callable, TypeVar
 
-from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from apps.raw_fetch_options_processor.model.db.RawFetchOptionsDto import RawFetchOptionsDto

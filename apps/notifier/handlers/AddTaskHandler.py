@@ -18,7 +18,7 @@ class AddTaskHandler(TelegramHandler):
     def get_handler(self):
         return lambda update, context: add_task_handler(update, context, self._save_options)
 
-    def _save_options(self, update, context):
+    def _save_options(self, update):
         message_text = update.message.text
         url = message_text.split(' ')[1]
 

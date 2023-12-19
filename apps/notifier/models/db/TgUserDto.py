@@ -3,9 +3,11 @@ from sqlalchemy import BigInteger, Boolean
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import mapped_column, Mapped
 
+from common.lib.to_str import to_str
 from common.model.db.BaseDto import BaseDto
 
 
+@to_str
 class TgUserDto(BaseDto):
     __tablename__ = 'tg_user'
 

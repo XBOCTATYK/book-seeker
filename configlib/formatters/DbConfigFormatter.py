@@ -5,6 +5,8 @@ from common.model.db.AppConfigDto import AppConfigDto
 from configlib.formatters.ConfigFormatter import ConfigFormatter
 from datasource.DbLikeDataSource import DbLikeDataSource
 
+PROPERTY_DIVIDER = '.'
+
 
 class DbConfigFormatter(ConfigFormatter):
     _data_source: DbLikeDataSource = None
@@ -26,7 +28,7 @@ class DbConfigFormatter(ConfigFormatter):
         config = {}
         for config_part in raw_config:
             key, value = config_part
-            key_array = key.split('.')
+            key_array = key.split(PROPERTY_DIVIDER)
 
             current = config
             for index, part in enumerate(key_array):
