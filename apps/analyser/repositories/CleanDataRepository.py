@@ -30,7 +30,7 @@ class CleanDataRepository(AbstractRepository):
         return rest
 
     def get_all(self) -> list[CleanDataDto]:
-        session = self._get_current_session()
+        session = self.get_current_session()
         statement = select(CleanDataDto)
         return list(session.execute(statement).unique().scalars().all())
 
