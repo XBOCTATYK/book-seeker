@@ -24,7 +24,7 @@ class TgUsersNotifier:
 
         self._filtered_result_formatter = filtered_result_formatter
 
-    async def notify(self, bot: Bot, filtered_data: list[FilteredResultDto]):
+    async def notify(self, bot: Bot, filtered_data: list[FilteredResultDto]) -> list[FilteredResultDto]:
         users = self._tg_user_repository.get_all_active()
 
         for user in users:
