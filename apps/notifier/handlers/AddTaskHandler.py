@@ -31,7 +31,7 @@ class AddTaskHandler(TelegramHandler):
 
 
 async def add_task_handler(update: Update, context: ContextTypes.DEFAULT_TYPE, fn: Callable[[Update, ContextTypes.DEFAULT_TYPE], bool]):
-    res = fn(update, context)
+    res = fn(update)
 
     if not res:
         await context.bot.send_message(
