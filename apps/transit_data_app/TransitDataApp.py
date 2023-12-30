@@ -35,6 +35,5 @@ class TransitDataApp(AbstractApp):
     def _process(self, data):
         print(data)
 
-    @staticmethod
-    def migrations():
-        return TransitDataAppMigrationScheme
+    def start_migrations(self) -> TransitDataAppMigrationScheme:
+        return TransitDataAppMigrationScheme()

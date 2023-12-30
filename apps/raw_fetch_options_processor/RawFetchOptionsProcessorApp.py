@@ -70,6 +70,5 @@ class RawFetchOptionsProcessorApp(AbstractApp):
     def exports(self) -> dict:
         return {}
 
-    @staticmethod
-    def migrations():
-        return RawFetchOptionsProcessorAppMigrationsScheme
+    def start_migrations(self) -> RawFetchOptionsProcessorAppMigrationsScheme:
+        return RawFetchOptionsProcessorAppMigrationsScheme()

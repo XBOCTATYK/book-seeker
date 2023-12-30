@@ -114,6 +114,5 @@ class ScavengerApp(AbstractApp):
     def exports(self) -> dict:
         return {}
 
-    @staticmethod
-    def migrations():
-        return ScavengerAppMigrationsScheme
+    def start_migrations(self) -> ScavengerAppMigrationsScheme:
+        return ScavengerAppMigrationsScheme()

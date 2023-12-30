@@ -1,6 +1,8 @@
 # abstract app class
 from abc import ABC, abstractmethod
 
+from common.db_migrations.AbstractMigrationScheme import AbstractMigrationScheme
+
 
 class AbstractApp(ABC):
     _config: dict = None
@@ -23,6 +25,6 @@ class AbstractApp(ABC):
     def exports(self) -> dict:
         return {}
 
-    @staticmethod
-    def migrations():
+    @abstractmethod
+    def start_migrations(self) -> AbstractMigrationScheme:
         pass

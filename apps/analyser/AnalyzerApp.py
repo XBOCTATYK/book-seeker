@@ -122,6 +122,5 @@ class AnalyzerApp(AbstractApp):
         result = self._processor_runner.process(selected_values)
         return result
 
-    @staticmethod
-    def migrations():
-        return AnalyserAppMigrationScheme
+    def start_migrations(self) -> AnalyserAppMigrationScheme:
+        return AnalyserAppMigrationScheme()

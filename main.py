@@ -52,8 +52,8 @@ if __name__ == '__main__':
         print('Migration started!')
 
         db_migrations_schemes = list(map(
-            lambda app: app.migrations()(),
-            [NotifierApp]
+            lambda app: app.start_migrations(),
+            [NotifierApp(config), ScavengerApp(config), AnalyzerApp(config), RawFetchOptionsProcessorApp(config)]
         ))
 
         BookAppsMigrations(

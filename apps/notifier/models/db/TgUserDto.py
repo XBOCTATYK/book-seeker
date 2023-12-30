@@ -13,5 +13,5 @@ class TgUserDto(BaseDto):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True, unique=True, autoincrement=True)
     tg_id: Mapped[int] = mapped_column(BigInteger, unique=True, index=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), default=DateTime().ISO())

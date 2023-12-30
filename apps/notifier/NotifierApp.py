@@ -6,6 +6,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, Application
 
 from apps.AbstractApp import AbstractApp
 from apps.analyser.models.dictionaries.ClearingDictionary import ClearingDictionary
+from apps.notifier.config.NofitierConfig import NotifierConfig
 from apps.notifier.db_migrations.NotifierMigrationScheme import NotifierMigrationScheme
 from apps.notifier.handlers.AddTaskHandler import AddTaskHandler
 from apps.notifier.handlers.StartHandlers import StartHandler
@@ -24,6 +25,7 @@ from datasource.providers.PostgresDataProvider import PostgresDataProvider
 
 
 class NotifierApp(AbstractApp):
+    _config: NotifierConfig
     _handlers: List[TelegramHandler] = [
         StartHandler()
     ]
@@ -41,7 +43,7 @@ class NotifierApp(AbstractApp):
     _raw_fetch_options_service: RawFetchOptionsService
     _raw_fetch_options_repository: RawFetchOptionsRepository
 
-    def __init__(self, config: dict):
+    def __init__(self, config: NotifierConfig):
         super().__init__(config)
 
         self._config = config
@@ -117,6 +119,5 @@ class NotifierApp(AbstractApp):
     def exports(self) -> dict:
         return {}
 
-    @staticmethod
-    def migrations():
-        return NotifierMigrationScheme
+    def start_migrations(self) -> NotifierMigrationScheme:
+        return NotifierMigrationScheme(self._config['bot'])
