@@ -24,6 +24,7 @@ class RawFetchOptionsProcessorApp(AbstractApp):
     _analyser_offset_repository: OffsetPointerRepository = None
     _analyser_offset_repository_name = 'raw_fetch_options_app'
     _scheduler = None
+    _event_bus = None
 
     def __init__(self, config: dict):
         super().__init__(config)
