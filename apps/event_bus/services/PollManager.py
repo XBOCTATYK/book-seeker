@@ -1,20 +1,19 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Callable, Any
 
 PollHandler = Callable[[Any], None]
 
 
 class PollManager(ABC):
-    _poll_handlers = []
 
-    def __init__(self, poll_handlers: list[PollHandler]):
-        self._poll_handlers = poll_handlers
-
+    @abstractmethod
     def start(self):
         pass
 
+    @abstractmethod
     def stop(self):
         pass
 
+    @abstractmethod
     def add_handler(self, handler: PollHandler):
-        self._poll_handlers.append(handler)
+        pass

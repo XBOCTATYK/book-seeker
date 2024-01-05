@@ -17,5 +17,11 @@
   },
   "analyser": {
     "pick_top": 3
+  },
+  "event_bus": {
+    "poll_manager": {
+      "max_workers": 10,
+      "poll_interval": 2
+    }
   }
 }
