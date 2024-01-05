@@ -35,21 +35,28 @@ class EventRepository(AbstractRepository):
             )
         )
 
-    def _get_next_n_events(self, sess, bottom, top) -> list[MessageDto]:
+    def save(self, value: MessageDto):
+        self.call_in_transaction(lambda sess: self._save(sess, value))
+
+    @staticmethod
+    def _save(sess: Session, message: MessageDto):
+        sess.add(message)
+        sess.flush([message])
+
+    @staticmethod
+    def _get_next_n_events(sess, bottom, top) -> list[MessageDto]:
         select_statement = select(MessageDto).where(MessageDto.id > bottom, MessageDto.id < top)
         return list(sess.execute(select_statement).scalars().all())
 
+    @staticmethod
     def _process_next_n_new_events(
-            self,
             sess: Session,
             bottom: int,
             top: int,
             fn: Callable[[list[MessageDto]], Any]
     ) -> list[MessageDto]:
-        res = self._get_next_n_events(sess, bottom, top)
+        res = EventRepository._get_next_n_events(sess, bottom, top)
 
         fn(res)
 
         return res
-
-
