@@ -19,11 +19,12 @@ class FilterCleanDataRepository(AbstractRepository):
         return self.call_in_transaction(
             lambda sess: self._offset_pointer_repository.call_in_window(
                 count,
-                lambda bottom, top: self._process_n_records(sess, bottom, top, fn)
+                lambda bottom, top: FilterCleanDataRepository._process_n_records(sess, bottom, top, fn)
             )
         )
 
-    def _process_n_records(self, sess: Session, bottom: int, top: int, fn):
+    @staticmethod
+    def _process_n_records(sess: Session, bottom: int, top: int, fn):
         statement = (select(CleanDataDto).where(CleanDataDto.id >= bottom)
                      .where(CleanDataDto.id < top))
 

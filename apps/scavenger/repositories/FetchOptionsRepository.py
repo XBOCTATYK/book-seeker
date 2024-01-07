@@ -30,7 +30,6 @@ class FetchOptionsRepository(AbstractRepository):
         return result_set
 
     def _insert_values(self, sess: Session, item: dict):
-
         filter_values_to_insert = []
 
         value_to_insert = {
