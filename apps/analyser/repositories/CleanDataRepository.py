@@ -12,9 +12,15 @@ from common.services.AbstractRepository import AbstractRepository
 
 class CleanDataRepository(AbstractRepository):
     def insert_clear_data(self, values: list[ClearDataInsertItem]) -> CleanDataDto:
-        return self.call_in_transaction(lambda sess: self._insert_clear_data(sess, values))
+        return self.call_in_transaction(lambda sess: CleanDataRepository._insert_clear_data(sess, values))
 
-    def _insert_clear_data(self, sess: Session, values: list[ClearDataInsertItem]) -> CleanDataDto:
+    def get_all(self) -> list[CleanDataDto]:
+        session = self.get_current_session()
+        statement = select(CleanDataDto)
+        return list(session.execute(statement).unique().scalars().all())
+
+    @staticmethod
+    def _insert_clear_data(sess: Session, values: list[ClearDataInsertItem]) -> CleanDataDto:
         insert_clear_data_statements = insert(CleanDataDto)\
             .values({'status': ECleanDataStatus.NEW.value, 'created_at': DateTime().ISO(), 'updated_at': DateTime().ISO()})\
             .returning(CleanDataDto.id)
@@ -28,9 +34,4 @@ class CleanDataRepository(AbstractRepository):
         rest: CleanDataDto = sess.execute(req).unique().scalar_one_or_none()
 
         return rest
-
-    def get_all(self) -> list[CleanDataDto]:
-        session = self.get_current_session()
-        statement = select(CleanDataDto)
-        return list(session.execute(statement).unique().scalars().all())
 

@@ -22,7 +22,7 @@ class TransitDataApp(AbstractApp):
         self._filtered_data_repository = FilteredDataRepository(self._data_source, self._transit_data_offset_repository)
 
     def start(self):
-        self._filtered_data_repository.process_next_n(10, self._process)
+        pass
 
     def stop(self):
         pass
@@ -31,9 +31,6 @@ class TransitDataApp(AbstractApp):
         return {
             'filtered_data_repository': self._filtered_data_repository
         }
-
-    def _process(self, data):
-        print(data)
 
     def start_migrations(self) -> TransitDataAppMigrationScheme:
         return TransitDataAppMigrationScheme()

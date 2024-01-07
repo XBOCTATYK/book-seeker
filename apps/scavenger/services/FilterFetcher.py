@@ -56,7 +56,8 @@ class FilterFetcher(AbstractRepository):
     def _process(self, result: FetchOptionsTable) -> FetchOptions:
         return FetchOptionsMapper(FilterTypeDictionary(self._data_source)).from_entity(result)
 
-    def _find_first(self, sess: Session) -> int:
+    @staticmethod
+    def _find_first(sess: Session) -> int:
         statement = min(FetchOptionsTable.id)
         res: int = sess.execute(statement).scalar_one_or_none()
 
