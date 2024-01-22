@@ -12,3 +12,4 @@ Project contains 4 applications:
 - Analyser, it make processing and filtering the data. All results are being stored in the datatbase.
 - Notifier, telegram bot that tacke the data from db and send it to telegram user
 - Raw fetch options saver, gets a raw url and transform it to set of fetch options that are supposed to be used by scavenger.
+  - Library for event bus
