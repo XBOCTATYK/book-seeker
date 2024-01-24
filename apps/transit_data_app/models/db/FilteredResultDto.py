@@ -1,5 +1,5 @@
 from DateTime import DateTime
-from sqlalchemy import Integer, ForeignKey
+from sqlalchemy import ForeignKey, BigInteger
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
@@ -12,7 +12,7 @@ from common.model.db.BaseDto import BaseDto
 class FilteredResultDto(BaseDto):
     __tablename__ = 'filtered_results'
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, unique=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True, unique=True, autoincrement=True)
     param_set: Mapped[int] = mapped_column(ForeignKey(CleanDataDto.id))
     clean_data: Mapped[CleanDataDto] = relationship(lazy=False)
     created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), default=DateTime().ISO())
