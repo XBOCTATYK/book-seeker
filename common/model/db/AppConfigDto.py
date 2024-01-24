@@ -1,5 +1,5 @@
 from DateTime import DateTime
-from sqlalchemy import Integer, String, Boolean
+from sqlalchemy import String, Boolean, SmallInteger
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import mapped_column, Mapped
 
@@ -11,7 +11,7 @@ from common.model.db.BaseDto import BaseDto
 class AppConfigDto(BaseDto):
     __tablename__ = "app_config"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True, index=True)
+    id: Mapped[int] = mapped_column(SmallInteger, primary_key=True, unique=True, index=True)
     key: Mapped[str] = mapped_column(String, index=True)
     value: Mapped[str] = mapped_column(String)
     is_active: Mapped[bool] = mapped_column(Boolean)
