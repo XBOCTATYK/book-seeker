@@ -31,6 +31,10 @@ def run_notifier(notifier_config: dict):
     NotifierApp(notifier_config).start()
 
 
+def run_features(features_config: dict):
+    FeaturesApp(features_config).start()
+
+
 if __name__ == '__main__':
     print('Starting...')
 
@@ -73,7 +77,7 @@ if __name__ == '__main__':
     p2 = Process(target=run_analyser, args=[config])
     p3 = Process(target=run_raw_fetch_options_processor, args=[config])
     p4 = Process(target=run_notifier, args=[config])
-    # p5 = Process(target=run_features, args=[config])
+    p5 = Process(target=run_features, args=[config])
 
     # p1.start()
     # p2.start()
