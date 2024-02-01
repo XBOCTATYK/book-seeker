@@ -11,6 +11,9 @@ from datasource.configs.DbConfig import DbConfig
 
 
 class BookAppsMigrations(AbstractApp):
+    def start_migrations(self) -> AbstractMigrationScheme:
+        pass
+
     _data_source: DbLikeDataSource
     _config = None
     _migration_schemes: List[AbstractMigrationScheme] = []
@@ -32,8 +35,10 @@ class BookAppsMigrations(AbstractApp):
             connection: Connection = self._data_source.get_connection()
 
             for dto in entities:
+                print(f'Creating table {dto.__tablename__}...')
                 dto.metadata.create_all(connection, checkfirst=True)
 
+            print('Inserting dictionaries...')
             dictionaries: dict[str, List[str]] = scheme.get_dictionaries()
             self._insert_dictionaries(connection, dictionaries, entities)
 

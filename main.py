@@ -1,6 +1,7 @@
 from multiprocessing import Process
 
 from apps.analyser.AnalyzerApp import AnalyzerApp
+from apps.features.FeaturesApp import FeaturesApp
 from apps.notifier.NotifierApp import NotifierApp
 from apps.raw_fetch_options_processor.RawFetchOptionsProcessorApp import RawFetchOptionsProcessorApp
 from apps.scavenger.ScavengerApp import ScavengerApp
@@ -53,7 +54,13 @@ if __name__ == '__main__':
 
         db_migrations_schemes = list(map(
             lambda app: app.start_migrations(),
-            [NotifierApp(config), ScavengerApp(config), AnalyzerApp(config), RawFetchOptionsProcessorApp(config)]
+            [
+                NotifierApp(config),
+                ScavengerApp(config),
+                AnalyzerApp(config),
+                RawFetchOptionsProcessorApp(config),
+                FeaturesApp(config)
+            ]
         ))
 
         BookAppsMigrations(
@@ -66,15 +73,16 @@ if __name__ == '__main__':
     p2 = Process(target=run_analyser, args=[config])
     p3 = Process(target=run_raw_fetch_options_processor, args=[config])
     p4 = Process(target=run_notifier, args=[config])
-    
-    p1.start()
-    p2.start()
-    p3.start()
-    p4.start()
-    
-    p1.join()
-    p2.join()
-    p3.join()
-    p4.join()
+    # p5 = Process(target=run_features, args=[config])
 
+    # p1.start()
+    # p2.start()
+    # p3.start()
+    # p4.start()
+    # p5.start()
 
+    # p1.join()
+    # p2.join()
+    # p3.join()
+    # p4.join()
+    # p5.join()
