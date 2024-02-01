@@ -11,9 +11,9 @@ from common.model.db.BaseDto import BaseDto
 class ConditionDto(BaseDto):
     __tablename__ = 'feature_conditions'
 
-    condition_id: int = mapped_column(BigInteger, primary_key=True)
-    feature_id: Mapped[int] = mapped_column(ForeignKey(FeatureDto.feature_id))
-    condition_type_id: Mapped[int] = mapped_column(ForeignKey(ConditionTypeDto.condition_type_id))
+    condition_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    feature_id: Mapped[int] = mapped_column(ForeignKey(FeatureDto.id))
+    condition_type_id: Mapped[int] = mapped_column(ForeignKey(ConditionTypeDto.id))
     condition_operator: Mapped[str] = mapped_column(String(31), nullable=False)
     condition_value: Mapped[str] = mapped_column(String(31), nullable=False)
     feature_value: Mapped[bool] = mapped_column(Boolean, nullable=False)

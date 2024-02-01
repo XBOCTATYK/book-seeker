@@ -16,5 +16,10 @@ features_migration_dictionaries = {
         'NOT_ENDS_WITH',
         'IS_NULL',
         'NOT_IS_NULL'
+    ],
+    'condition_types': [
+        'PLATFORM',
+        'USER_LIST',
+        'ENV'
     ]
 }
